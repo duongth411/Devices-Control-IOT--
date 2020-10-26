@@ -1,0 +1,43 @@
+C51 COMPILER V9.60.0.0   DEF8051STRINGANALYSIS                                             03/20/2020 10:21:36 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DEF8051STRINGANALYSIS
+OBJECT MODULE PLACED IN .\Objects\def8051StringAnalysis.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lib\def8051StringAnalysis.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\..\..\..\
+                    -..\material\N76E003_BSP_Keil_C51_V1.0.6\N76E003_BSP_Keil_C51_V1.0.6\Include;.\lib) DEFINE(FOSC_160000) DEBUG OBJECTEXTEN
+                    -D PRINT(.\Listings\def8051StringAnalysis.lst) OBJECT(.\Objects\def8051StringAnalysis.obj)
+
+line level    source
+
+   1          #include "def8051StringAnalysis.h"
+   2          //#include "string.h"
+   3          //#include "Common.h"
+   4          #include "N76E003.h"
+*** ERROR C158 IN LINE 7 OF ..\..\..\..\..\material\N76E003_BSP_Keil_C51_V1.0.6\N76E003_BSP_Keil_C51_V1.0.6\Include\N76E
+             -003.h: '_UARTSendString': function contains unnamed parameter
+*** ERROR C141 IN LINE 7 OF ..\..\..\..\..\material\N76E003_BSP_Keil_C51_V1.0.6\N76E003_BSP_Keil_C51_V1.0.6\Include\N76E
+             -003.h: syntax error near 'sfr', expected 'hdata'
+   5          unsigned char GetAddress(unsigned char* RAWADDRESS){
+   6   1              unsigned char FINEADDRESS,i=0;
+   7   1              while((*(RAWADDRESS+i))!='\0'){
+   8   2                      if((*(RAWADDRESS+i))>48&&(*(RAWADDRESS+i))<<58){
+   9   3                              FINEADDRESS = (*(RAWADDRESS+i))+FINEADDRESS*10;
+  10   3                              i++;
+  11   3                      }
+  12   2              }
+  13   1              return FINEADDRESS;
+  14   1      }
+  15          void UARTSendChar (unsigned char vrcN76E003UARTDatasend){
+  16   1              TI = 0;
+  17   1              SBUF = vrcN76E003UARTDatasend;
+  18   1              while(TI==0){};
+  19   1      }
+  20          void UARTSendString(char* StringToSend){
+  21   1              unsigned char LengthOfString=0,i;
+  22   1              LengthOfString = strlen(StringToSend);
+  23   1              for(i=0;i<=LengthOfString;i++){
+  24   2                      UARTSendChar(StringToSend+i);
+  25   2              }
+  26   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)

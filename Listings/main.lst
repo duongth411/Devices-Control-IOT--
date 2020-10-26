@@ -1,0 +1,1230 @@
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c ROM(COMPACT) OPTIMIZE(8,SPEED) BROWSE INCDIR(.\lib;.\Include) DEF
+                    -INE(FOSC_160000) DEBUG OBJECTEXTEND PRINT(.\Listings\main.lst) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          /*-------------------------------------------------------------------------------------------*/
+   2          // Ten file: main.c
+   3          // Phien ban: v2, phien ban thu hai 
+   4          // Nguoi Viet: Tran Hoang Duong
+   5          // Ngay khoi dau: 16/03/2020
+   6          // Ngay ket thuc: 10/04/2020
+   7          // Tinh trang: TESTED OK
+   8          // Ghi chu: File chuong trinh cho du an dieu khien qua mang khong day - RELAYCONTROL_V2
+   9          /*-------------------------------------------------------------------------------------------*/
+  10           
+  11          #include "main.h"
+  12          
+  13          void main(){    
+  14   1              fn8051SYSPinMode();     
+  15   1              LCD_Init();
+  16   1              LCD_SET_CURSOR(0,0);
+  17   1              LCD_DISPLAY_STRING("ENOGY");
+  18   1              LCD_SET_CURSOR(1,0);
+  19   1              LCD_DISPLAY_STRING("GLOBAL");
+  20   1              ITRPIORITYSETUP
+  21   1              _TURN_PIN_OFF_
+  22   1              fn8051ITRRegSettup();
+  23   1              fn8051UART0Init();
+  24   1              fn8051DS1307Out_1Hz();
+  25   1              fn8051SIMINIT();
+  26   1              vrcGlb8051UARTPointer = (unsigned char*) malloc(RXDATASIZE * sizeof(unsigned char));
+  27   1              fn8051SYSDELAY(200);
+  28   1              while(1){
+  29   2                      if(vrbGlb8051SYSMainFlag == 0){
+  30   3                              fn8051SYS_DISPLAY_mode();
+  31   3                              fn8051SYS_MENU_MODE();
+  32   3                      }
+  33   2                      else if (vrbGlb8051SYSMainFlag == 1){
+  34   3                              TIMER0ITR_HALT_
+  35   3                              vrcGlbSYSRECEIVEADDR = fn8051SYSCheckAddress();         
+  36   3                              if(vrcGlbSYSRECEIVEADDR == vrcGlbSYSMYAddress){
+  37   4                                      vrcGlbSYSREQESTEDMODE = fn8051SYSCheckRQ();
+  38   4                                      if(vrcGlbSYSREQESTEDMODE == 1){                                 
+  39   5                                              fn8051SYS_ACT_mode();
+  40   5                                              fn8051SYSRESETALLFLAG();
+  41   5                                      }
+  42   4                                      else if(vrcGlbSYSREQESTEDMODE == 2){                    
+  43   5                                              fn8051SYS_SAV_mode();
+  44   5                                              fn8051SYSRESETALLFLAG();
+  45   5                                      }       
+  46   4                                      else if(vrcGlbSYSREQESTEDMODE == 3){                    
+  47   5                                              fn8051SYS_TMR_mode();
+  48   5                                              fn8051SYSRESETALLFLAG();
+  49   5                                      }
+  50   4                                      else if(vrcGlbSYSREQESTEDMODE == 4){            
+  51   5                                              fn8051SYS_RQC_mode() ;
+  52   5                                              fn8051SYSRESETALLFLAG();
+  53   5                                      }
+  54   4                                      else if(vrcGlbSYSREQESTEDMODE == 5){                    
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 2   
+
+  55   5                                              fn8051SYS_RQS_mode();
+  56   5                                              fn8051SYSRESETALLFLAG();
+  57   5                                      }
+  58   4                                      else if(vrcGlbSYSREQESTEDMODE == 6){    
+  59   5                                              fn8051SYS_RQA_mode() ;
+  60   5                                              fn8051SYSRESETALLFLAG();
+  61   5                                      }
+  62   4                                      else if(vrcGlbSYSREQESTEDMODE == 0){
+  63   5                                              fn8051SYSRESETALLFLAG();
+  64   5                                      }
+  65   4                              }
+  66   3                              else if (vrcGlbSYSRECEIVEADDR != vrcGlbSYSMYAddress) {
+  67   4                                      fn8051SYS_JOIN_mode() ;
+  68   4                                      fn8051SYSRESETALLFLAG();
+  69   4                              }       
+  70   3                      }
+  71   2              }
+  72   1      }
+  73          void fn8051SYSPinMode(){
+  74   1              Set_All_GPIO_Quasi_Mode;
+  75   1              P15_PushPull_Mode;
+  76   1              P03_PushPull_Mode;
+  77   1              P02_PushPull_Mode;
+  78   1              P00_PushPull_Mode;
+  79   1              P10_PushPull_Mode;
+  80   1              P11_PushPull_Mode;
+  81   1              P12_PushPull_Mode;
+  82   1              P13_PushPull_Mode;
+  83   1              P14_PushPull_Mode;
+  84   1      }
+  85          void fn8051ITRRegSettup(){
+  86   1              TMOD = 0x11;
+  87   1              TH0 = 0xC1;
+  88   1              TL0 = 0x80;
+  89   1              set_T0M;
+  90   1              TF0 = 0; 
+  91   1              TIMER0ITR_ON_
+  92   1              clr_T1M;
+  93   1              TF1 = 0; 
+  94   1              ET1 = 1;
+  95   1              TR1 = 1;
+  96   1              TH1 = 0x63;
+  97   1              TL1 = 0xC0;
+  98   1      }
+  99          void fn8051UART0Init(){
+ 100   1              if ( vrcGlbSYSMODULETYPE != OFFLINE){
+ 101   2                      InitialUART0_Timer3(BAUDRATE);
+ 102   2                      clr_TI;
+ 103   2                      clr_RI;
+ 104   2                      set_EA;
+ 105   2                      set_ES;    
+ 106   2              }
+ 107   1      }
+ 108          void  fn8051ITRVector1(void) interrupt 1{ //timer 1ms
+ 109   1              unsigned char CHECKSETTIMECOUNT,SHIFTCOUNT;
+ 110   1              static unsigned char checklocate = 0;
+ 111   1              CHECKSETTIMECOUNT++;
+ 112   1              SHIFTCOUNT++;
+ 113   1              if(CHECKSETTIMECOUNT > 60){
+ 114   2                      fn8051SYSRelayTimingCheck(checklocate);
+ 115   2                      checklocate++;
+ 116   2                      if(checklocate == 101){checklocate = 0;}
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 3   
+
+ 117   2                      CHECKSETTIMECOUNT = 0;
+ 118   2              }
+ 119   1              if(SHIFTCOUNT>2){
+ 120   2                      SHIFT_INDICATOR = 1;
+ 121   2                      SHIFTCOUNT = 0;
+ 122   2              }
+ 123   1              TH0 = 0xC1;
+ 124   1              TL0 = 0x80;
+ 125   1      }
+ 126          void  fn8051ITRVector3(void) interrupt 3{ //timer 30ms TIMER 1
+ 127   1              unsigned char togglecount;
+ 128   1              togglecount++;
+ 129   1              if(togglecount > 250){                          //2,1s
+ 130   2                      vrbGlb8051TOGGLEFLAG = 1;
+ 131   2                      togglecount = 0;
+ 132   2              }       
+ 133   1              TH1 = 0x63;
+ 134   1              TL1 = 0xC0;
+ 135   1      }
+ 136          void fn8051ITRVector4(void) interrupt 4 {
+ 137   1              unsigned char throwaway;
+ 138   1          if(RI==1){
+ 139   2                      throwaway = SBUF;
+ 140   2                      if (throwaway == '>'){
+ 141   3                              vrbGlb8051SIMFLAG = 1;
+ 142   3                              RI = 0;
+ 143   3                      }
+ 144   2                      else if((throwaway >= '!')&&(throwaway <= 'z')){
+ 145   3                              *(vrcGlb8051UARTPointer+INDEX) = throwaway;
+ 146   3                              INDEX++;
+ 147   3                              if(*(vrcGlb8051UARTPointer+INDEX-1) == '$') {
+ 148   4                                      vrbGlb8051SYSMainFlag = 1;
+ 149   4                                      fn8051_BUZZER_(1);
+ 150   4                              }
+ 151   3                              RI = 0;
+ 152   3                      }
+ 153   2                      else if((throwaway < '!')||(throwaway > 'z')){
+ 154   3                              throwaway=0;
+ 155   3                              RI = 0;
+ 156   3                      }       
+ 157   2              }
+ 158   1              if(TI==1){
+ 159   2                      TI =0;
+ 160   2              }
+ 161   1      }
+ 162          unsigned char fn8051SYSCheckAddress(){
+ 163   1              unsigned char i=2,RECEIVEDADDR =0;
+ 164   1              if(vrcGlbSYSMODULETYPE == SIM){
+ 165   2                      vrcGlb8051UARTPointer = strstr(vrcGlb8051UARTPointer,"S:");
+ 166   2              }
+ 167   1              if((*(vrcGlb8051UARTPointer)=='S')&&(*(vrcGlb8051UARTPointer+1)==':')){               
+ 168   2                      while((*(vrcGlb8051UARTPointer+i)) > 47 && (*(vrcGlb8051UARTPointer+i) < 58)){
+ 169   3                                      RECEIVEDADDR = (*(vrcGlb8051UARTPointer+i)-'0')+RECEIVEDADDR*10;        
+ 170   3                                      i++;
+ 171   3                      }
+ 172   2              }
+ 173   1              i =2;
+ 174   1              return RECEIVEDADDR;
+ 175   1      }
+ 176          unsigned char fn8051SYSCheckRQ(){
+ 177   1              unsigned char *vrc8051SYSPointer,RequestType = 0;
+ 178   1              char *indicator = ";";
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 4   
+
+ 179   1              vrc8051SYSPointer = (unsigned char*) malloc(SmalldataSize * sizeof(unsigned char));
+ 180   1              vrc8051SYSPointer = strtok(vrcGlb8051UARTPointer,indicator);
+ 181   1              free(vrc8051SYSPointer);
+ 182   1              indicator = "!";
+ 183   1              vrc8051SYSPointer = strtok(NULL,indicator);
+ 184   1                       if(strcmp(vrc8051SYSPointer,ACT) == 0)  {RequestType = 1; }
+ 185   1              else if(strcmp(vrc8051SYSPointer,SAV) == 0)  {RequestType = 2; }
+ 186   1              else if(strcmp(vrc8051SYSPointer,TMR) == 0)  {RequestType = 3; }
+ 187   1              else if(strcmp(vrc8051SYSPointer,RQC) == 0)  {RequestType = 4; }
+ 188   1              else if(strcmp(vrc8051SYSPointer,RQS) == 0)  {RequestType = 5; }
+ 189   1              else if(strcmp(vrc8051SYSPointer,RQA) == 0)  {RequestType = 6; }
+ 190   1              else if(strcmp(vrc8051SYSPointer,JOINO) == 0){RequestType = 7; }
+ 191   1              else if(strcmp(vrc8051SYSPointer,JOINF) == 0){RequestType = 8; }
+ 192   1              free(vrc8051SYSPointer);
+ 193   1              return RequestType;
+ 194   1      }
+ 195          void fn8051SYS_ACT_mode(){
+ 196   1              unsigned char *vrcPointer,RelayNum,RelayStatus,i=0;
+ 197   1              char *indicator = "$";
+ 198   1              vrcPointer = (unsigned char*) malloc(HugeDADASIZE * sizeof(unsigned char));
+ 199   1              vrcPointer = strtok(NULL,indicator);
+ 200   1              strcat(vrcPointer,"&");
+ 201   1              while(*(vrcPointer+i) != '&'){
+ 202   2                      if(*(vrcPointer+i) == 'R'){
+ 203   3                              RelayNum = *(vrcPointer+i+2)-'0';       
+ 204   3                              RelayStatus = (*(vrcPointer+i+4)-'0')?1:0;
+ 205   3                              if (RelayNum == 1){pnoGlb8051Relay1 = RelayStatus;}
+ 206   3                              else if (RelayNum == 2) {pnoGlb8051Relay2 = RelayStatus;}
+ 207   3                      }
+ 208   2                      i++;
+ 209   2              }
+ 210   1      }       
+ 211          void fn8051SYS_TMR_mode(){
+ 212   1              unsigned char *vrc8051SYSPointer,vrucSYSstrlen =0,HOUR,MIN,SEC,systaxcheck=0;
+ 213   1              char *indicator = ";";
+ 214   1              vrc8051SYSPointer = (unsigned char*) malloc(SmalldataSize * sizeof(unsigned char));
+ 215   1              vrc8051SYSPointer = strtok(NULL,indicator);
+ 216   1              vrucSYSstrlen = strlen(vrc8051SYSPointer);
+ 217   1              if(*(vrc8051SYSPointer)=='H'&&*(vrc8051SYSPointer+1)==':'){
+ 218   2                      HOUR = ((*(vrc8051SYSPointer+2)-'0'))*10+(*(vrc8051SYSPointer+3)-'0');                  
+ 219   2              }
+ 220   1              else{
+ 221   2                      vrbGlb8051SYSWrongSyntax = 1;
+ 222   2              }       
+ 223   1              vrc8051SYSPointer = strtok(NULL,indicator);     
+ 224   1              if(*(vrc8051SYSPointer)=='M'&&*(vrc8051SYSPointer+1)==':'){
+ 225   2                      MIN = ((*(vrc8051SYSPointer+2)-'0'))*10+(*(vrc8051SYSPointer+3)-'0');
+ 226   2              }
+ 227   1              else{
+ 228   2                      vrbGlb8051SYSWrongSyntax = 1;
+ 229   2              }       
+ 230   1              vrc8051SYSPointer = strtok(NULL,indicator);     
+ 231   1              if(*(vrc8051SYSPointer)=='S'&&*(vrc8051SYSPointer+1)==':'){
+ 232   2                      SEC = ((*(vrc8051SYSPointer+2)-'0'))*10+(*(vrc8051SYSPointer+3)-'0');
+ 233   2              }
+ 234   1              else{
+ 235   2                      vrbGlb8051SYSWrongSyntax = 1;
+ 236   2              }
+ 237   1              vrc8051SYSPointer = strtok(NULL,indicator);     
+ 238   1              if(*vrc8051SYSPointer != '$'){
+ 239   2                      vrbGlb8051SYSWrongSyntax = 1;
+ 240   2              }
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 5   
+
+ 241   1              vrc8051SYSPointer = strtok(NULL,indicator);     
+ 242   1              if(vrbGlb8051SYSWrongSyntax ==0){
+ 243   2                      vrcGlb8051DS1307Hour = HOUR;
+ 244   2                      vrcGlb8051DS1307Min  = MIN;
+ 245   2                      vrcGlb8051DS1307Sec  = SEC;
+ 246   2              }
+ 247   1              fn8051DS1307WriteTime();
+ 248   1              free(vrc8051SYSPointer);
+ 249   1      }
+ 250          void fn8051SYS_SAV_mode(){
+ 251   1              unsigned char *vrc8051TimePointer,Locate=4,RelayNum,RelayStatus,*timestring;
+ 252   1              unsigned int TimeSet= 0;
+ 253   1              char *indicator = ";";
+ 254   1              timestring = (unsigned char*) malloc(HugeDADASIZE * sizeof(unsigned char));
+ 255   1              vrc8051TimePointer = (unsigned char*) malloc(SmalldataSize * sizeof(unsigned char));
+ 256   1              timestring = strtok(NULL,"$");
+ 257   1              timestring = strcat(timestring,"$;");
+ 258   1              vrc8051TimePointer = strtok(timestring,indicator);
+ 259   1              while(*(vrc8051TimePointer) != '$'){
+ 260   2                      if(*vrc8051TimePointer=='R'&&*(vrc8051TimePointer+1)==':'){
+ 261   3                              RelayNum = *(vrc8051TimePointer+2)-'0';         
+ 262   3                              while(*(vrc8051TimePointer+Locate) >= '0' && *(vrc8051TimePointer+Locate) <= '9'){
+ 263   4                                      TimeSet = ((*(vrc8051TimePointer+Locate))-'0')+(TimeSet*10);
+ 264   4                                      Locate++;
+ 265   4                              }
+ 266   3                              RelayStatus = (*(vrc8051TimePointer+Locate+1))-'0'; 
+ 267   3                              fn8051SYSTimeEncode(TimeSet,RelayStatus,RelayNum);      
+ 268   3                              TimeSet = 0;
+ 269   3                              Locate = 4;
+ 270   3                              }
+ 271   2                      vrc8051TimePointer = strtok(NULL,indicator);
+ 272   2              }       
+ 273   1      }
+ 274          void fn8051SYS_RQS_mode(){
+ 275   1              unsigned char relaystatus,i;
+ 276   1              unsigned int time;
+ 277   1              if(vrcGlbSYSREQESTEDMODE == 5){
+ 278   2                      fn8051SIMSENDSTRING();
+ 279   2                      fn8051UARTSendString("S:");
+ 280   2                      fn8051UARTSendNumber(vrcGlbSYSMYAddress,0);
+ 281   2                      fn8051UARTSendChar(';');
+ 282   2                      fn8051UARTSendString(RQS);
+ 283   2                      fn8051UARTSendChar('!');
+ 284   2              }
+ 285   1              for (i=0;i<VrcGlbAPROMRelayADR1;i+=2){
+ 286   2                      time = (Vruca1GlbTimerRelay1[i+1]&(0x3f)) +(unsigned int) (Vruca1GlbTimerRelay1[i]*60);
+ 287   2                      relaystatus = (Vruca1GlbTimerRelay1[i+1] & 0x40) ? 1:0 ;
+ 288   2                      fn8051UARTSendString("RS:");
+ 289   2                      fn8051UARTSendNumber(1,0);
+ 290   2                      fn8051UARTSendChar(':');
+ 291   2                      fn8051UARTSendNumber(time,0);
+ 292   2                      fn8051UARTSendChar(':');
+ 293   2                      fn8051UARTSendNumber(relaystatus,0);
+ 294   2                      fn8051UARTSendChar(';');
+ 295   2              }
+ 296   1              for (i=0;i<VrcGlbAPROMRelayADR2;i+=2){
+ 297   2                      time = (Vruca1GlbTimerRelay2[i+1]&(0x3f)) +(unsigned int) (Vruca1GlbTimerRelay2[i]*60);
+ 298   2                      relaystatus = (Vruca1GlbTimerRelay2[i+1] & 0x40) ? 1:0 ;
+ 299   2                      fn8051UARTSendString("RS:");
+ 300   2                      fn8051UARTSendNumber(2,0);
+ 301   2                      fn8051UARTSendChar(':');
+ 302   2                      fn8051UARTSendNumber(time,0);
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 6   
+
+ 303   2                      fn8051UARTSendChar(':');
+ 304   2                      fn8051UARTSendNumber(relaystatus,0);
+ 305   2                      fn8051UARTSendChar(';');
+ 306   2              }
+ 307   1              fn8051UARTSendChar('$');
+ 308   1              if(vrcGlbSYSREQESTEDMODE == 5){
+ 309   2                      fn8051SIMSENDSMS();
+ 310   2              }
+ 311   1      }
+ 312          void fn8051SYS_RQC_mode(){
+ 313   1              unsigned long int TMRtime;
+ 314   1              char i;
+ 315   1              fn8051DS1307ReadTime();
+ 316   1              TMRtime = vrcGlb8051DS1307Sec+(unsigned int)(vrcGlb8051DS1307Min*60)+(unsigned long int)(vrcGlb8051DS1307
+             -Hour*3600);
+ 317   1              if(vrcGlbSYSREQESTEDMODE == 4){
+ 318   2                      fn8051SIMSENDSTRING();
+ 319   2                      fn8051UARTSendString("S:");
+ 320   2                      fn8051UARTSendNumber(vrcGlbSYSMYAddress,0);
+ 321   2                      fn8051UARTSendChar(';');
+ 322   2                      fn8051UARTSendString(RQC);
+ 323   2                      fn8051UARTSendChar('!');
+ 324   2              }
+ 325   1              fn8051UARTSendNumber(TMRtime,0);
+ 326   1              fn8051UARTSendChar(';');
+ 327   1              for (i=1;i<3;i++){
+ 328   2                      fn8051UARTSendString("RC:");
+ 329   2                      fn8051UARTSendNumber(i,0);
+ 330   2                      fn8051UARTSendChar(':');
+ 331   2                      if(i == 1){fn8051UARTSendNumber(pnoGlb8051Relay1,0);}
+ 332   2                      else if(i == 2){fn8051UARTSendNumber(pnoGlb8051Relay2,0);}
+ 333   2                      fn8051UARTSendChar(';');
+ 334   2              }
+ 335   1              fn8051UARTSendString("ADCC:1:");
+ 336   1              fn8051UARTSendFLOAT(fn8051ADCREAD(1,0),0);
+ 337   1              fn8051UARTSendChar(';');
+ 338   1              fn8051UARTSendString("ADCC:2:");
+ 339   1              fn8051UARTSendFLOAT(fn8051ADCREAD(0,0),0);
+ 340   1              fn8051UARTSendChar(';');
+ 341   1              if(vrcGlbSYSREQESTEDMODE == 4){  
+ 342   2                      fn8051UARTSendChar('$');
+ 343   2                      fn8051SIMSENDSMS();
+ 344   2              }
+ 345   1              
+ 346   1      }
+ 347          void fn8051SYS_RQA_mode(){
+ 348   1              fn8051SIMSENDSTRING();
+ 349   1              fn8051UARTSendString("S:");
+ 350   1              fn8051UARTSendNumber(vrcGlbSYSMYAddress,0);
+ 351   1              fn8051UARTSendChar(';');
+ 352   1              fn8051UARTSendString(RQA);
+ 353   1              fn8051UARTSendChar('!');
+ 354   1              fn8051SYS_RQC_mode();
+ 355   1              fn8051SYS_RQS_mode();
+ 356   1              fn8051SIMSENDSMS();
+ 357   1      }
+ 358          void fn8051SYS_JOIN_mode(){
+ 359   1              vrcGlbSYSREQESTEDMODE = fn8051SYSCheckRQ();
+ 360   1              if(vrcGlbSYSREQESTEDMODE<7){
+ 361   2                      //not my device's addreess
+ 362   2              }
+ 363   1              else if(vrcGlbSYSREQESTEDMODE == 7){
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 7   
+
+ 364   2                      vrcGlbSYSMYAddress = vrcGlbSYSRECEIVEADDR;
+ 365   2              }
+ 366   1              else if (vrcGlbSYSREQESTEDMODE == 8){
+ 367   2                      // join failed
+ 368   2              }
+ 369   1      }
+ 370          void fn8051SYS_DISPLAY_mode(){
+ 371   1              float VADC;
+ 372   1              unsigned char DISPLAY_INDICATOR = 0,HOLD_DT=0;
+ 373   1              signed char BUTTON_ENCODE;
+ 374   1              bit TRACKING = 0;
+ 375   1              BUTTON_ENCODE = 0;
+ 376   1              TIMER1ITR_ON_
+ 377   1              TIMER0ITR_ON_
+ 378   1              free(vrcGlb8051UARTPointer);  
+ 379   1              _DISPLAY_FUNC_(1);
+ 380   1              while (vrbGlb8051SYSMainFlag == 0){
+ 381   2                      if(DISPLAY_INDICATOR == 0){
+ 382   3                              fn8051DS1307ReadTime();
+ 383   3                              LCD_SET_CURSOR(1,0);
+ 384   3                              fn8051UARTSendNumber(vrcGlb8051DS1307Hour,1);
+ 385   3                              LCD_DISPLAY_CHAR(':');
+ 386   3                              fn8051UARTSendNumber(vrcGlb8051DS1307Min,1);
+ 387   3                              LCD_DISPLAY_CHAR(':');
+ 388   3                              fn8051UARTSendNumber(vrcGlb8051DS1307Sec,1);
+ 389   3                      }
+ 390   2                      else if(DISPLAY_INDICATOR == 1){
+ 391   3                              LCD_SET_CURSOR(1,11);
+ 392   3                              //LCD_DISPLAY_STRING("1: ");
+ 393   3                              if (pnoGlb8051Relay1 == 0){ LCD_DISPLAY_STRING("TAT");}
+ 394   3                              else { LCD_DISPLAY_STRING("BAT");}
+ 395   3                      }
+ 396   2                      else if(DISPLAY_INDICATOR == 2){
+ 397   3                              LCD_SET_CURSOR(1,19);
+ 398   3                              //LCD_DISPLAY_STRING("2: ");
+ 399   3                              if (pnoGlb8051Relay2 == 0){ LCD_DISPLAY_STRING("TAT");}
+ 400   3                              else { LCD_DISPLAY_STRING("BAT");}
+ 401   3                      }
+ 402   2                      else if(DISPLAY_INDICATOR == 3){
+ 403   3                              VADC = fn8051ADCREAD(0,0);
+ 404   3                              LCD_SET_CURSOR(1,29);
+ 405   3                              //LCD_DISPLAY_STRING("ADC1:");
+ 406   3                              fn8051UARTSendFLOAT(VADC,1);
+ 407   3                      }
+ 408   2                      else if(DISPLAY_INDICATOR == 4){
+ 409   3                              VADC = fn8051ADCREAD(1,0);
+ 410   3                              LCD_SET_CURSOR(1,37);
+ 411   3                              //LCD_DISPLAY_STRING("ADC2:");
+ 412   3                              fn8051UARTSendFLOAT(VADC,1);
+ 413   3                      }
+ 414   2                      BUTTON_ENCODE = 0;
+ 415   2                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 416   2                      if (BUTTON_ENCODE == 0){
+ 417   3                              if(TRACKING == 0 && vrbGlb8051TOGGLEFLAG == 1){
+ 418   4                                      DISPLAY_INDICATOR++;
+ 419   4                                      if (DISPLAY_INDICATOR >= 5){ DISPLAY_INDICATOR = 0;}
+ 420   4                                      vrbGlb8051TOGGLEFLAG = 0;
+ 421   4                                      LCD_NEW_SLIDE(L);
+ 422   4                              }
+ 423   3                              else if (TRACKING == 1){
+ 424   4                                      DISPLAY_INDICATOR = DISPLAY_INDICATOR;
+ 425   4                              }
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 8   
+
+ 426   3                      }
+ 427   2                      else if(BUTTON_ENCODE == 1){ 
+ 428   3                              DISPLAY_INDICATOR ++;
+ 429   3                              if(DISPLAY_INDICATOR>=5){
+ 430   4                                      DISPLAY_INDICATOR = 0;
+ 431   4                              }
+ 432   3                              LCD_NEW_SLIDE(L);               
+ 433   3                      }
+ 434   2                      else if (BUTTON_ENCODE == -1){
+ 435   3                              DISPLAY_INDICATOR--;
+ 436   3                              if(DISPLAY_INDICATOR<=255&&DISPLAY_INDICATOR>10){
+ 437   4                                      DISPLAY_INDICATOR = 4;
+ 438   4                              }
+ 439   3                              LCD_NEW_SLIDE(R);
+ 440   3                      }
+ 441   2                      else if (BUTTON_ENCODE == 2) {
+ 442   3                              while(BUTTON_ENCODE == 2 && HOLD_DT < 10){
+ 443   4                                      HOLD_DT++;
+ 444   4                                      BUTTON_ENCODE =0;
+ 445   4                                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 446   4                              }
+ 447   3                              if(HOLD_DT > 8){
+ 448   4                                      HOLD_DT = 0;
+ 449   4                                      break;
+ 450   4                              }
+ 451   3                              else {
+ 452   4                                      TRACKING ^= 1;
+ 453   4                                      if(TRACKING == 0) { 
+ 454   5                                              vrbGlb8051TOGGLEFLAG = 0;
+ 455   5                                              fn8051_BUZZER_(1);
+ 456   5                                      }
+ 457   4                                      else {
+ 458   5                                              fn8051_BUZZER_(0);
+ 459   5                                      }
+ 460   4                                      HOLD_DT = 0;    
+ 461   4                              }
+ 462   3                      }
+ 463   2              }
+ 464   1      }
+ 465          void fn8051SYS_MENU_MODE(){
+ 466   1              unsigned char DISPLAY_INDICATOR = 0,STRING_LEN,HOLD_DT =0;
+ 467   1              signed char BUTTON_ENCODE;
+ 468   1              _DISPLAY_FUNC_(0);
+ 469   1              while(vrbGlb8051SYSMainFlag == 0){
+ 470   2                      if(DISPLAY_INDICATOR == 0){
+ 471   3                              if(SHIFT_INDICATOR == 1){
+ 472   4                                      STRING_LEN = strlen(BTTHIETBI);
+ 473   4                                      LCD_SET_CURSOR(1,0);
+ 474   4                                      LCD_SCROLL_1LINE(BTTHIETBI,STRING_LEN);
+ 475   4                                      SHIFT_INDICATOR = 0;
+ 476   4                              }
+ 477   3                      }
+ 478   2                      else if(DISPLAY_INDICATOR == 2){
+ 479   3                              if(SHIFT_INDICATOR == 1){
+ 480   4                                      STRING_LEN = strlen(CAIGIO);
+ 481   4                                      LCD_SET_CURSOR(1,16);
+ 482   4                                      LCD_SCROLL_1LINE(CAIGIO,STRING_LEN);
+ 483   4                                      SHIFT_INDICATOR = 0;
+ 484   4                              }
+ 485   3                      }
+ 486   2                      else if(DISPLAY_INDICATOR == 4){
+ 487   3                              if(SHIFT_INDICATOR == 1){
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 9   
+
+ 488   4                                      STRING_LEN = strlen(DANHSACH);
+ 489   4                                      LCD_SET_CURSOR(1,32);
+ 490   4                                      LCD_SCROLL_1LINE(DANHSACH,STRING_LEN);
+ 491   4                                      SHIFT_INDICATOR = 0;
+ 492   4                              }
+ 493   3                      }
+ 494   2                      BUTTON_ENCODE = 0;
+ 495   2                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 496   2                      if (BUTTON_ENCODE == 0){} //do nothing
+ 497   2                      else if(BUTTON_ENCODE == 1){ 
+ 498   3                              DISPLAY_INDICATOR++;
+ 499   3                              if(DISPLAY_INDICATOR>4){DISPLAY_INDICATOR = 0;}
+ 500   3                              LCD_NEW_SLIDE(L);                       
+ 501   3                      }
+ 502   2                      else if(BUTTON_ENCODE == -1){
+ 503   3                              DISPLAY_INDICATOR--;
+ 504   3                              if(DISPLAY_INDICATOR==255){DISPLAY_INDICATOR = 4;}
+ 505   3                              LCD_NEW_SLIDE(R);
+ 506   3                      }                       
+ 507   2                      else if (BUTTON_ENCODE == 2) {
+ 508   3                              BUTTON_ENCODE = fn8051ButtenEncode();
+ 509   3                              while(BUTTON_ENCODE == 2 && HOLD_DT < 10){
+ 510   4                                      HOLD_DT++;
+ 511   4                                      BUTTON_ENCODE =0;
+ 512   4                                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 513   4                              }
+ 514   3                              if(HOLD_DT > 8){
+ 515   4                                      break;
+ 516   4                              }
+ 517   3                              else {
+ 518   4                                      if (DISPLAY_INDICATOR == 0){
+ 519   5                                              fn8051SYS_RELAYSET_mode();
+ 520   5                                              break;
+ 521   5                                      }
+ 522   4                                      else if (DISPLAY_INDICATOR == 1){
+ 523   5                                              fn8051SYS_SAVONBOARD_mode();
+ 524   5                                              break;
+ 525   5                                      }
+ 526   4                                      else if (DISPLAY_INDICATOR == 2){
+ 527   5                                              fn8051SYS_TIMESET_mode();
+ 528   5                                              break;                  
+ 529   5                                      }
+ 530   4                                      else if (DISPLAY_INDICATOR == 3){
+ 531   5                                              fn8051SYS_SETUP_MODE();
+ 532   5                                              break;
+ 533   5                                      }
+ 534   4                                      else if (DISPLAY_INDICATOR == 4){
+ 535   5                                              //fn8051SYS_SAVEDLIST_MODE();
+ 536   5                                      }                                       
+ 537   4                              }
+ 538   3                      }
+ 539   2              }
+ 540   1      }
+ 541          void _DISPLAY_FUNC_(unsigned char mode){
+ 542   1              unsigned char i=0;
+ 543   1              if(mode == 0){                  // MENU MODE
+ 544   2                      LCD_CLEARDISPLAY
+ 545   2                      fn8051SYSDELAY(50);
+ 546   2                      LCD_SET_CURSOR(0,0);
+ 547   2                      LCD_DISPLAY_STRING("DANG TAI");
+ 548   2                      LCD_SET_CURSOR(1,0);
+ 549   2                      LCD_DISPLAY_STRING("XIN CHO!");
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 10  
+
+ 550   2                      fn8051SYSDELAY(150);
+ 551   2                      LCD_CLEARDISPLAY
+ 552   2                      for (i = 0;i<5;i++){
+ 553   3                              fn8051SYSDELAY(20);
+ 554   3                              LCD_SET_CURSOR(0,(8*i)+2);
+ 555   3                              LCD_DISPLAY_STRING("MENU");
+ 556   3                              LCD_SET_CURSOR(0,8*i);
+ 557   3                              LCD_DISPLAY_CHAR(0x7f);
+ 558   3                              LCD_SET_CURSOR(0,(8*i)+7);
+ 559   3                              LCD_DISPLAY_CHAR(0x7e);
+ 560   3                      }
+ 561   2                      LCD_SET_CURSOR(1,0);
+ 562   2                      LCD_DISPLAY_STRING("Bat/Tat ");
+ 563   2                      LCD_SET_CURSOR(1,8);
+ 564   2                      LCD_DISPLAY_STRING("Hen Gio");
+ 565   2                      LCD_SET_CURSOR(1,16);
+ 566   2                      LCD_DISPLAY_STRING("Cai dat ");
+ 567   2                      LCD_SET_CURSOR(1,24);
+ 568   2                      LCD_DISPLAY_STRING("CAI MODE");
+ 569   2                      LCD_SET_CURSOR(1,32);
+ 570   2                      LCD_DISPLAY_STRING("Danh sac");
+ 571   2              }
+ 572   1              else if (mode == 1){    //DISPLAY MODE
+ 573   2                      LCD_CLEARDISPLAY
+ 574   2                      fn8051SYSDELAY(50);
+ 575   2                      LCD_SET_CURSOR(0,0);
+ 576   2                      LCD_DISPLAY_STRING("DONG HO:");
+ 577   2                      LCD_SET_CURSOR(0,8);
+ 578   2                      LCD_DISPLAY_STRING("THIET BI");
+ 579   2                      LCD_SET_CURSOR(0,16);
+ 580   2                      LCD_DISPLAY_STRING("THIET BI");
+ 581   2                      LCD_SET_CURSOR(0,24);
+ 582   2                      LCD_DISPLAY_STRING("CAM BIEN");
+ 583   2                      LCD_SET_CURSOR(0,32);
+ 584   2                      LCD_DISPLAY_STRING("CAM BIEN");
+ 585   2                      LCD_SET_CURSOR(1,24);
+ 586   2                      LCD_DISPLAY_STRING("1: ");
+ 587   2                      LCD_SET_CURSOR(1,32);
+ 588   2                      LCD_DISPLAY_STRING("2: ");
+ 589   2                      LCD_SET_CURSOR(1,8);
+ 590   2                      LCD_DISPLAY_STRING("1: ");
+ 591   2                      LCD_SET_CURSOR(1,16);
+ 592   2                      LCD_DISPLAY_STRING("2: ");
+ 593   2              }
+ 594   1              else if (mode == 2){    //SETUP MODE
+ 595   2                      LCD_CLEARDISPLAY
+ 596   2                      LCD_SET_CURSOR(0,0);
+ 597   2                      LCD_DISPLAY_STRING("CHE DO: ");
+ 598   2                      LCD_SET_CURSOR(0,8);
+ 599   2                      LCD_DISPLAY_STRING("KET NOI:");
+ 600   2                      LCD_SET_CURSOR(0,16);
+ 601   2                      LCD_DISPLAY_STRING("DIA CHI:");
+ 602   2              }
+ 603   1              else if (mode == 3){    //RELAYSET MODE
+ 604   2                      LCD_CLEARDISPLAY
+ 605   2                      LCD_SET_CURSOR(0,0);
+ 606   2                      LCD_DISPLAY_STRING("THIET BI");
+ 607   2                      LCD_SET_CURSOR(1,1);
+ 608   2                      LCD_DISPLAY_CHAR(':');
+ 609   2              }
+ 610   1              else if (mode == 4){    //Saveonboard MODE
+ 611   2                      LCD_CLEARDISPLAY
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 11  
+
+ 612   2                      fn8051SYSDELAY(50);
+ 613   2                      LCD_SET_CURSOR(0,1);
+ 614   2                      LCD_DISPLAY_STRING("HEN GIO");
+ 615   2                      LCD_SET_CURSOR(1,1);
+ 616   2                      LCD_DISPLAY_STRING("DEM LUI");
+ 617   2                      LCD_SET_CURSOR(0,8);
+ 618   2                      LCD_DISPLAY_STRING("THIET BI");
+ 619   2                      LCD_SET_CURSOR(0,16);
+ 620   2                      LCD_DISPLAY_STRING("GIO:PHUT");
+ 621   2                      LCD_SET_CURSOR(1,19);
+ 622   2                      LCD_DISPLAY_CHAR(':');
+ 623   2                      LCD_SET_CURSOR(1,17);
+ 624   2                      LCD_DISPLAY_NUMBER(0);
+ 625   2                      LCD_SET_CURSOR(1,18);
+ 626   2                      LCD_DISPLAY_NUMBER(0);
+ 627   2                      LCD_SET_CURSOR(1,20);
+ 628   2                      LCD_DISPLAY_NUMBER(0);
+ 629   2                      LCD_SET_CURSOR(1,21);
+ 630   2                      LCD_DISPLAY_NUMBER(0);
+ 631   2              }
+ 632   1              else if (mode ==5){
+ 633   2                      LCD_CLEARDISPLAY
+ 634   2                      fn8051SYSDELAY(50);
+ 635   2                      LCD_SET_CURSOR(0,0);
+ 636   2                      LCD_DISPLAY_STRING("GIO:PHUT");
+ 637   2                      LCD_SET_CURSOR(1,3);
+ 638   2                      LCD_DISPLAY_CHAR(':');
+ 639   2                      LCD_SET_CURSOR(1,1);
+ 640   2                      LCD_DISPLAY_NUMBER(0);
+ 641   2                      LCD_SET_CURSOR(1,2);
+ 642   2                      LCD_DISPLAY_NUMBER(0);
+ 643   2                      LCD_SET_CURSOR(1,5);
+ 644   2                      LCD_DISPLAY_NUMBER(0);
+ 645   2                      LCD_SET_CURSOR(1,6);
+ 646   2                      LCD_DISPLAY_NUMBER(0);
+ 647   2              }
+ 648   1      }
+ 649          void fn8051SYS_SETUP_MODE(){
+ 650   1              signed char BUTTON_ENCODE;
+ 651   1              unsigned char DISPLAY_INDICATOR = 0,buffervalue = 0,HOLD_DT = 0;
+ 652   1              bit USING_MODE =0;
+ 653   1              _DISPLAY_FUNC_(2);
+ 654   1              while(vrbGlb8051SYSMainFlag == 0){
+ 655   2                      BUTTON_ENCODE = 0;
+ 656   2                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 657   2                      if(DISPLAY_INDICATOR==0){
+ 658   3                              if( BUTTON_ENCODE ==1||BUTTON_ENCODE==-1){
+ 659   4                                      USING_MODE^=1;
+ 660   4                              }
+ 661   3                              LCD_SET_CURSOR(1,0);
+ 662   3                              if(USING_MODE == 1){
+ 663   4                                      LCD_DISPLAY_STRING("ONLINE");
+ 664   4                              }
+ 665   3                              else if(USING_MODE == 0){
+ 666   4                                      LCD_DISPLAY_STRING("OFFLINE");
+ 667   4                              }
+ 668   3                      }
+ 669   2                      if(USING_MODE == 0){vrcGlbSYSMODULETYPE = OFFLINE;}
+ 670   2                      fn8051_BUZZER_(1);
+ 671   2                      if(DISPLAY_INDICATOR== 1 && USING_MODE == OFFLINE){
+ 672   3                              if( BUTTON_ENCODE == 1||BUTTON_ENCODE == -1){
+ 673   4                                      buffervalue += BUTTON_ENCODE;
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 12  
+
+ 674   4                                      if(buffervalue>3) {buffervalue = 3;}
+ 675   4                                      else if (buffervalue==255){buffervalue = 1;}
+ 676   4                              }
+ 677   3                              LCD_SET_CURSOR(1,8);
+ 678   3                              if(buffervalue == 1){LCD_DISPLAY_STRING("WIFI");}       
+ 679   3                              else if(buffervalue == 2){LCD_DISPLAY_STRING("SIM");}   
+ 680   3                              else if(buffervalue == 3){LCD_DISPLAY_STRING("LORA");}  
+ 681   3                              vrcGlbSYSMODULETYPE = buffervalue;
+ 682   3                      }
+ 683   2                      buffervalue =0;
+ 684   2                      fn8051_BUZZER_(1);
+ 685   2                      if(DISPLAY_INDICATOR == 2 && USING_MODE == OFFLINE){
+ 686   3                              buffervalue = 100;
+ 687   3                              if( BUTTON_ENCODE == 1||BUTTON_ENCODE == -1){
+ 688   4                                      buffervalue += BUTTON_ENCODE;
+ 689   4                                      if(buffervalue>100) {buffervalue = 0;}
+ 690   4                                      else if (buffervalue==255){buffervalue = 99;}
+ 691   4                              }
+ 692   3                              LCD_SET_CURSOR(1,16);
+ 693   3                              if(buffervalue == 100){LCD_DISPLAY_STRING("TU CHON");}  
+ 694   3                              else fn8051UARTSendNumber(buffervalue,1);
+ 695   3                              vrcGlbSYSMYAddress = buffervalue;
+ 696   3                      }
+ 697   2                      fn8051_BUZZER_(1);
+ 698   2                      if (BUTTON_ENCODE == 2) {
+ 699   3                              while(BUTTON_ENCODE == 2 && HOLD_DT < 10){
+ 700   4                                      HOLD_DT++;
+ 701   4                                      BUTTON_ENCODE =0;
+ 702   4                                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 703   4                              }
+ 704   3                              if(HOLD_DT > 8){
+ 705   4                                      break;
+ 706   4                              }
+ 707   3                              else {
+ 708   4                                      DISPLAY_INDICATOR ++;
+ 709   4                                      if(DISPLAY_INDICATOR > 3) { DISPLAY_INDICATOR = 0;}
+ 710   4                                      HOLD_DT = 0;    
+ 711   4                              }
+ 712   3                      }
+ 713   2                      // if(buffervalue == 0){
+ 714   2                              // fn8051uartsendstring("s:");
+ 715   2                              // fn8051uartsendnumber(0,0);                                                                          
+             -                                                              
+ 716   2                              // fn8051uartsendstring(";");
+ 717   2                              // fn8051uartsendstring("join!$");
+ 718   2                      // }
+ 719   2              }
+ 720   1              if( vrcGlbSYSMODULETYPE != 0 ) {
+ 721   2                      LCD_SET_CURSOR(0,0);
+ 722   2                      LCD_DISPLAY_STRING("RESET");
+ 723   2                      LCD_SET_CURSOR(1,0);
+ 724   2                      LCD_DISPLAY_STRING("SAU: ");
+ 725   2                      LCD_SET_CURSOR(1,6);
+ 726   2                      LCD_DISPLAY_CHAR('s');
+ 727   2                      for(DISPLAY_INDICATOR = 6;DISPLAY_INDICATOR<0;DISPLAY_INDICATOR--){
+ 728   3                              LCD_SET_CURSOR(1,5);
+ 729   3                              LCD_DISPLAY_NUMBER(DISPLAY_INDICATOR-1);
+ 730   3                              fn8051SYSDELAY(1000);
+ 731   3                      }
+ 732   2                      set_SWRST;
+ 733   2              }
+ 734   1      }
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 13  
+
+ 735          void fn8051SYS_RELAYSET_mode(){
+ 736   1              unsigned char HOLD_DT=0,RELAYNUM = 0;
+ 737   1              signed char BUTTON_ENCODE;
+ 738   1              bit RELAYSTATUS;
+ 739   1              _DISPLAY_FUNC_(3);
+ 740   1              while(vrbGlb8051SYSMainFlag == 0){
+ 741   2                      BUTTON_ENCODE = 0;
+ 742   2                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 743   2                      if( BUTTON_ENCODE == 0){}
+ 744   2                      else if ((BUTTON_ENCODE == 1)||(BUTTON_ENCODE == -1)){
+ 745   3                              RELAYNUM += BUTTON_ENCODE;
+ 746   3                              if(RELAYNUM == 2){RELAYNUM =0;}
+ 747   3                              else if (RELAYNUM == 255){RELAYNUM =1;}
+ 748   3                      }
+ 749   2                      else if (BUTTON_ENCODE == 2){
+ 750   3                              while(BUTTON_ENCODE == 2 && HOLD_DT < 10){
+ 751   4                                      HOLD_DT++;
+ 752   4                                      BUTTON_ENCODE =0;
+ 753   4                                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 754   4                              }
+ 755   3                              if(HOLD_DT > 8){
+ 756   4                                      break;
+ 757   4                              }
+ 758   3                              else{
+ 759   4                                      if( RELAYNUM == 0) RELAYSTATUS = pnoGlb8051Relay1;
+ 760   4                                      else if ( RELAYNUM == 1) RELAYSTATUS = pnoGlb8051Relay2;
+ 761   4                                      RELAYSTATUS ^= 1;
+ 762   4                              }
+ 763   3                      }
+ 764   2                      LCD_SET_CURSOR(1,0);
+ 765   2                      LCD_DISPLAY_NUMBER(RELAYNUM+1);
+ 766   2                      LCD_SET_CURSOR(1,5);
+ 767   2                      if(RELAYSTATUS == 1)  LCD_DISPLAY_STRING ("BAT");
+ 768   2                      else if (RELAYSTATUS == 0)  LCD_DISPLAY_STRING ("TAT"); 
+ 769   2                      if( RELAYNUM == 0)  pnoGlb8051Relay1 = RELAYSTATUS;
+ 770   2                      else if ( RELAYNUM == 1)  pnoGlb8051Relay2 = RELAYSTATUS;
+ 771   2              }
+ 772   1      }
+ 773          void fn8051SYS_SAVONBOARD_mode(){
+ 774   1              unsigned char RELAYNUM = 0,buttonsum = 0,DISPLAY_INDICATOR = 0,BUFFER = 0,HOLD_DT =0;
+ 775   1              signed char BUTTON_ENCODE;
+ 776   1              unsigned int ENCODEDTIME = 0;
+ 777   1              bit RELAYSTATUS = 0,SAVEMODE = 0;
+ 778   1              _DISPLAY_FUNC_(4);
+ 779   1              while(vrbGlb8051SYSMainFlag == 0){
+ 780   2                      if(DISPLAY_INDICATOR == 0){
+ 781   3                              SAVEMODE = BUFFER%2     ?1:0;
+ 782   3                              if (SAVEMODE == 0){
+ 783   4                                      LCD_SET_CURSOR(0,0);
+ 784   4                                      LCD_DISPLAY_CHAR(0x7e);
+ 785   4                                      LCD_SET_CURSOR(1,0);
+ 786   4                                      LCD_DISPLAY_CHAR(' ');
+ 787   4                              }
+ 788   3                              else{
+ 789   4                                      LCD_SET_CURSOR(0,0);
+ 790   4                                      LCD_DISPLAY_CHAR(' ');
+ 791   4                                      LCD_SET_CURSOR(1,0);
+ 792   4                                      LCD_DISPLAY_CHAR(0x7e);
+ 793   4                              }
+ 794   3                      }
+ 795   2                      else if (DISPLAY_INDICATOR == 1){
+ 796   3                              LCD_SET_CURSOR(1,8);
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 14  
+
+ 797   3                              LCD_DISPLAY_CHAR(0x7e);
+ 798   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 799   3                              RELAYNUM = BUFFER;
+ 800   3                      }
+ 801   2                      else if (DISPLAY_INDICATOR == 2){
+ 802   3                              LCD_SET_CURSOR(1,12);
+ 803   3                              LCD_DISPLAY_CHAR(0x7e);
+ 804   3                              RELAYSTATUS = BUFFER%2 ?1:0;
+ 805   3                              if(RELAYSTATUS == 1){LCD_DISPLAY_STRING("BAT");}
+ 806   3                              else LCD_DISPLAY_STRING("TAT");
+ 807   3                      }
+ 808   2                      else if ( DISPLAY_INDICATOR == 3){
+ 809   3                              LCD_CURSOR_ON
+ 810   3                              LCD_CURSOR_BLINK
+ 811   3                              LCD_SET_CURSOR(1,17);
+ 812   3                              if(BUFFER>2) BUFFER = 2;
+ 813   3                              else if(BUFFER == 255) BUFFER = 0;
+ 814   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 815   3                              LCD_CURSOR_MOVE_LEFT
+ 816   3                              ENCODEDTIME = (unsigned int) BUFFER*600;
+ 817   3                      }
+ 818   2                      else if ( DISPLAY_INDICATOR == 4){
+ 819   3                              LCD_SET_CURSOR(1,18);
+ 820   3                              if(BUFFER>9) BUFFER = 9;
+ 821   3                              else if(BUFFER == 255) BUFFER = 0;
+ 822   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 823   3                              LCD_CURSOR_MOVE_LEFT
+ 824   3                              ENCODEDTIME += (unsigned int) BUFFER*60;
+ 825   3                      }
+ 826   2                      else if ( DISPLAY_INDICATOR == 5){
+ 827   3                              LCD_SET_CURSOR(1,20);
+ 828   3                              if(BUFFER>6) BUFFER = 6;
+ 829   3                              else if(BUFFER == 255) BUFFER = 0;
+ 830   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 831   3                              LCD_CURSOR_MOVE_LEFT
+ 832   3                              ENCODEDTIME += BUFFER*10;
+ 833   3                      }
+ 834   2                      else if ( DISPLAY_INDICATOR == 6){
+ 835   3                              LCD_SET_CURSOR(1,21);
+ 836   3                              if(BUFFER>9) BUFFER = 9;
+ 837   3                              else if(BUFFER == 255) BUFFER = 0;
+ 838   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 839   3                              LCD_CURSOR_MOVE_LEFT
+ 840   3                              ENCODEDTIME += BUFFER;
+ 841   3                      }
+ 842   2                      BUTTON_ENCODE = 0;
+ 843   2                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 844   2                      if(BUTTON_ENCODE == 0){}
+ 845   2                      else if(BUTTON_ENCODE == 1){
+ 846   3                              BUFFER++;
+ 847   3                      }
+ 848   2                      else if(BUTTON_ENCODE == -1){
+ 849   3                              BUFFER--;
+ 850   3                      }
+ 851   2                      else if(BUTTON_ENCODE==2){
+ 852   3                              while(BUTTON_ENCODE == 2 && HOLD_DT < 10){
+ 853   4                                      HOLD_DT++;
+ 854   4                                      BUTTON_ENCODE =0;
+ 855   4                                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 856   4                              }
+ 857   3                              if(HOLD_DT > 8){
+ 858   4                                      break;
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 15  
+
+ 859   4                              }
+ 860   3                              else{
+ 861   4                                      HOLD_DT =0;
+ 862   4                                      DISPLAY_INDICATOR++;
+ 863   4                                      BUFFER = 0;
+ 864   4                                      if((DISPLAY_INDICATOR == 1)||(DISPLAY_INDICATOR == 3)){
+ 865   5                                              LCD_NEXT_SCREEN(1);
+ 866   5                                      }
+ 867   4                                      else if (DISPLAY_INDICATOR == 7){
+ 868   5                                              if(SAVEMODE == 1) {
+ 869   6                                                      fn8051DS1307ReadTime();
+ 870   6                                                      ENCODEDTIME += ((unsigned int) vrcGlb8051DS1307Hour*60 + vrcGlb8051DS1307Min);
+ 871   6                                              }
+ 872   5                                              fn8051SYSTimeEncode(ENCODEDTIME,RELAYSTATUS,RELAYNUM);
+ 873   5                                              DISPLAY_INDICATOR = 0;
+ 874   5                                              LCD_CURSOR_OFF
+ 875   5                                              LCD_CLEARDISPLAY
+ 876   5                                              LCD_SET_CURSOR(0,0);
+ 877   5                                              LCD_DISPLAY_STRING("DA LUU!");
+ 878   5                                              fn8051_BUZZER_(1);
+ 879   5                                              fn8051SYSDELAY(50);
+ 880   5                                              _DISPLAY_FUNC_(4);
+ 881   5                                      }
+ 882   4                              }
+ 883   3                      }
+ 884   2              }       
+ 885   1      }
+ 886          void fn8051SYS_TIMESET_mode(){
+ 887   1              unsigned char HOUR= 0,MINUTE=0,HOLD_DT=0,DISPLAY_INDICATOR=0,BUFFER =0;
+ 888   1              signed char BUTTON_ENCODE =0;
+ 889   1              _DISPLAY_FUNC_(5);
+ 890   1              LCD_CURSOR_ON
+ 891   1              LCD_CURSOR_BLINK
+ 892   1              while(vrbGlb8051SYSMainFlag == 0){
+ 893   2                      if ( DISPLAY_INDICATOR == 0){
+ 894   3                              LCD_SET_CURSOR(1,1);
+ 895   3                              if(BUFFER>2) BUFFER = 2;
+ 896   3                              else if(BUFFER == 255) BUFFER = 0;
+ 897   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 898   3                              LCD_CURSOR_MOVE_LEFT
+ 899   3                              HOUR = BUFFER*10;
+ 900   3                      }
+ 901   2                      else if ( DISPLAY_INDICATOR == 1){
+ 902   3                              LCD_SET_CURSOR(1,2);
+ 903   3                              if(BUFFER>9) BUFFER = 9;
+ 904   3                              else if(BUFFER == 255) BUFFER = 0;
+ 905   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 906   3                              LCD_CURSOR_MOVE_LEFT
+ 907   3                              HOUR += BUFFER;
+ 908   3                      }
+ 909   2                      else if ( DISPLAY_INDICATOR == 2){
+ 910   3                              LCD_SET_CURSOR(1,5);
+ 911   3                              if(BUFFER>6) BUFFER = 6;
+ 912   3                              else if(BUFFER == 255) BUFFER = 0;
+ 913   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 914   3                              LCD_CURSOR_MOVE_LEFT
+ 915   3                              MINUTE = BUFFER*10;
+ 916   3                      }
+ 917   2                      else if ( DISPLAY_INDICATOR == 3){
+ 918   3                              LCD_SET_CURSOR(1,6);
+ 919   3                              if(BUFFER>9) BUFFER = 9;
+ 920   3                              else if(BUFFER == 255) BUFFER = 0;
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 16  
+
+ 921   3                              LCD_DISPLAY_NUMBER(BUFFER);
+ 922   3                              LCD_CURSOR_MOVE_LEFT
+ 923   3                              MINUTE += BUFFER;
+ 924   3                      }
+ 925   2                      BUTTON_ENCODE = 0;
+ 926   2                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 927   2                      if(BUTTON_ENCODE == 0){}
+ 928   2                      else if(BUTTON_ENCODE == 1){
+ 929   3                              BUFFER++;
+ 930   3                      }
+ 931   2                      else if(BUTTON_ENCODE == -1){
+ 932   3                              BUFFER--;
+ 933   3                      }
+ 934   2                      else if(BUTTON_ENCODE==2){
+ 935   3                              while(BUTTON_ENCODE == 2 && HOLD_DT < 10){
+ 936   4                                      HOLD_DT++;
+ 937   4                                      BUTTON_ENCODE =0;
+ 938   4                                      BUTTON_ENCODE = fn8051ButtenEncode();
+ 939   4                              }
+ 940   3                              if(HOLD_DT > 8){
+ 941   4                                      LCD_CURSOR_OFF
+ 942   4                                      break;
+ 943   4                              }
+ 944   3                              else{
+ 945   4                                      HOLD_DT =0;
+ 946   4                                      DISPLAY_INDICATOR++;
+ 947   4                                      BUFFER = 0;
+ 948   4                                      if (DISPLAY_INDICATOR == 4){
+ 949   5                                              LCD_CURSOR_OFF
+ 950   5                                              LCD_CLEARDISPLAY
+ 951   5                                              LCD_SET_CURSOR(0,0);
+ 952   5                                              LCD_DISPLAY_STRING("DA LUU!");
+ 953   5                                              vrcGlb8051DS1307Hour = HOUR;
+ 954   5                                              vrcGlb8051DS1307Min = MINUTE;
+ 955   5                                              fn8051DS1307WriteTime();
+ 956   5                                              fn8051_BUZZER_(1);
+ 957   5                                              break;
+ 958   5                                      }
+ 959   4                              }
+ 960   3                      }
+ 961   2              }       
+ 962   1      } 
+ 963          void fn8051DS1307ReadTime(){
+ 964   1              vrcGlb8051DS1307Sec  = fn8051DS1307Readdata(SEC);
+ 965   1              vrcGlb8051DS1307Min  = fn8051DS1307Readdata(MIN);
+ 966   1              vrcGlb8051DS1307Hour = fn8051DS1307Readdata(HOUR);
+ 967   1      }
+ 968          void fn8051DS1307WriteTime(){
+ 969   1              fn8051DS1307Writedata(SEC,vrcGlb8051DS1307Sec);
+ 970   1              fn8051DS1307Writedata(MIN,vrcGlb8051DS1307Min);
+ 971   1              fn8051DS1307Writedata(HOUR,vrcGlb8051DS1307Hour);
+ 972   1      }
+ 973          void fn8051UARTSendChar (unsigned char BUFFER){
+ 974   1              SBUF = BUFFER ;
+ 975   1              while(TI==0){};
+ 976   1      }
+ 977          
+ 978          void fn8051UARTSendString(char* StringToSend){
+ 979   1              unsigned char LengthOfString,i;
+ 980   1              LengthOfString = strlen(StringToSend);
+ 981   1              for(i=0;i<=LengthOfString;i++){
+ 982   2                      fn8051UARTSendChar(*(StringToSend+i));
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 17  
+
+ 983   2              }
+ 984   1      }
+ 985          void fn8051SYSRESETALLFLAG(){
+ 986   1              free(vrcGlb8051UARTPointer);
+ 987   1              INDEX = 0;
+ 988   1              vrbGlb8051SYSMainFlag = 0;
+ 989   1              vrbGlb8051SIMFLAG = 0;
+ 990   1              EA = 1;
+ 991   1      }
+ 992          void fn8051UARTSendNumber(unsigned long int Number,bit mode){   //mode de chon gui qua UART hoac man hinh lc
+             -d
+ 993   1              unsigned char i =0,TEMP;
+ 994   1              if (Number ==0&&mode == 0){
+ 995   2                      if(mode == 0){fn8051UARTSendChar('0');}
+ 996   2                      else LCD_DISPLAY_NUMBER(0);
+ 997   2              }
+ 998   1              else if (Number <10 && mode == 1){
+ 999   2                      LCD_DISPLAY_NUMBER(0);
+1000   2                      LCD_DISPLAY_NUMBER(Number);
+1001   2              }
+1002   1              else{
+1003   2                      while(Number>=pow(10,i)){
+1004   3                              i++;
+1005   3                      }
+1006   2                      i = i-1;
+1007   2                      for(i=i;i>0;i--){
+1008   3                              TEMP = Number/pow(10,i);
+1009   3                              Number = Number - (unsigned long int) (TEMP*pow(10,i));
+1010   3                              if(mode == 0){fn8051UARTSendChar((unsigned char)(TEMP+'0'));}
+1011   3                              else LCD_DISPLAY_NUMBER(TEMP);
+1012   3                      }
+1013   2                      if(mode == 0){fn8051UARTSendChar((unsigned char)(Number+'0'));}
+1014   2                      else LCD_DISPLAY_NUMBER(Number);
+1015   2              }
+1016   1      }
+1017          void fn8051UARTSendFLOAT(float Number,bit mode){                        //mode de chon gui qua UART hoac man hinh lcd
+1018   1              unsigned char Nguyen,Tphan;
+1019   1              
+1020   1              Nguyen = (unsigned char)Number ;
+1021   1              Tphan = (unsigned char) ((Number - Nguyen)*10);
+1022   1              if(mode == 0){
+1023   2                      fn8051UARTSendNumber(Nguyen,0);
+1024   2                      fn8051UARTSendChar('.');
+1025   2                      fn8051UARTSendNumber(Tphan,0);
+1026   2              }
+1027   1              else {
+1028   2                      LCD_DISPLAY_NUMBER(Nguyen);
+1029   2                      LCD_DISPLAY_CHAR('.');
+1030   2                      LCD_DISPLAY_NUMBER(Tphan);
+1031   2              }       
+1032   1      }
+1033          unsigned long int pow(char number,char times){ 
+1034   1              unsigned char i=0;
+1035   1              unsigned long int pownumber =1;
+1036   1              for(i=0;i<times;i++){
+1037   2                      pownumber = pownumber*number;
+1038   2              }
+1039   1              return  pownumber;
+1040   1      }
+1041          void fn8051_BUZZER_(unsigned char mode){
+1042   1              if (mode == 0){                         
+1043   2                      pnoGlb8051BUZZER = 0;
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 18  
+
+1044   2                      fn8051SYSDELAY(10);
+1045   2                      pnoGlb8051BUZZER = 1;
+1046   2                      fn8051SYSDELAY(10);
+1047   2                      pnoGlb8051BUZZER = 0;
+1048   2                      fn8051SYSDELAY(10);
+1049   2                      pnoGlb8051BUZZER = 1;
+1050   2              }
+1051   1              else if (mode == 1){
+1052   2                      pnoGlb8051BUZZER = 0;
+1053   2                      fn8051SYSDELAY(30);
+1054   2                      pnoGlb8051BUZZER = 1;
+1055   2              }               
+1056   1      }
+1057          void fn8051SYSTimeEncode(unsigned int TimeSet,unsigned char RelayStatus,unsigned char RelayNum){
+1058   1              unsigned char Hour,Min;
+1059   1              if(TimeSet>1439){
+1060   2                      TimeSet-=1439;
+1061   2              }
+1062   1              Hour = TimeSet / 60;
+1063   1              Min = TimeSet%60;
+1064   1              if(RelayNum==1){
+1065   2                      if(RelayStatus == 1){Min|=0x40;}
+1066   2                      else if (RelayStatus == 0) {Min|=0x00;}
+1067   2                      fn8051EPROMWrite(VrcGlbAPROMRelayADR1,Hour,1);
+1068   2                      VrcGlbAPROMRelayADR1++;
+1069   2                      fn8051EPROMWrite(VrcGlbAPROMRelayADR1,Min,1);
+1070   2                      VrcGlbAPROMRelayADR1++;
+1071   2                      if(VrcGlbAPROMRelayADR1 >= 100){VrcGlbAPROMRelayADR1 = 98;}
+1072   2              }
+1073   1              else if(RelayNum == 2){
+1074   2                      if(RelayStatus == 1)       {Min|=0x40;}
+1075   2                      else if (RelayStatus == 0) {Min|=0x00;}
+1076   2                      fn8051EPROMWrite(VrcGlbAPROMRelayADR2,Hour,0);
+1077   2                      VrcGlbAPROMRelayADR2++;
+1078   2                      fn8051EPROMWrite(VrcGlbAPROMRelayADR2,Min,0);
+1079   2                      VrcGlbAPROMRelayADR2++;
+1080   2                      if(VrcGlbAPROMRelayADR2 >= 100){VrcGlbAPROMRelayADR2 = 98;}
+1081   2              }
+1082   1      }
+1083          void fn8051SYSRelayTimingCheck(unsigned char i){
+1084   1              
+1085   1              if (vrcGlb8051DS1307Hour == Vruca1GlbTimerRelay1[i] ){
+1086   2                      if(vrcGlb8051DS1307Min == (Vruca1GlbTimerRelay1[i+1]&0x3f)){
+1087   3                              pnoGlb8051Relay1 = Vruca1GlbTimerRelay1[i+1]&0x40 ?1:0;
+1088   3                      }
+1089   2              }
+1090   1              if (vrcGlb8051DS1307Hour == Vruca1GlbTimerRelay2[i] ){
+1091   2                      if(vrcGlb8051DS1307Min == (Vruca1GlbTimerRelay2[i+1]&0x3f)){
+1092   3                              pnoGlb8051Relay2 = Vruca1GlbTimerRelay2[i+1]&0x40 ?1:0;
+1093   3                      }
+1094   2              }
+1095   1      }       
+1096          void fn8051EPROMWrite (unsigned int vri8051APROMADDR,unsigned char vruc8051DATA, bit vrb8051ARPORMSAVEPAGE
+             -){
+1097   1              unsigned int vri8051APROMPAGEADR;
+1098   1              if(vrb8051ARPORMSAVEPAGE == 1) { 
+1099   2                      vri8051APROMPAGEADR = 0x3E80;                   
+1100   2              }
+1101   1              else if(vrb8051ARPORMSAVEPAGE == 0) {
+1102   2                      vri8051APROMPAGEADR = 0x3F00;                   
+1103   2              }
+1104   1              EA = 0;
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 19  
+
+1105   1              TA = 0xAA;
+1106   1              TA = 0x55;      
+1107   1              CHPCON |= 0x01; 
+1108   1              TA = 0xAA;
+1109   1              TA = 0x55;
+1110   1              IAPUEN |= 0x01;                                                                         
+1111   1              IAPCN = 0x21;   
+1112   1              IAPAL = (vri8051APROMPAGEADR&0xff)+vri8051APROMADDR;
+1113   1              IAPAH = (vri8051APROMPAGEADR>>8)&0xff;
+1114   1              IAPFD = vruc8051DATA;
+1115   1              TA = 0xAA;
+1116   1              TA = 0x55;
+1117   1              IAPTRG |= 0x01;                 
+1118   1              TA = 0xAA;
+1119   1              TA = 0x55;
+1120   1              IAPUEN &= ~0x01;
+1121   1              TA = 0xAA;
+1122   1              TA = 0x55;
+1123   1              CHPCON &= ~0x01;
+1124   1              EA = 1;
+1125   1      }
+1126          void fn8051SIMINIT(){
+1127   1              if(vrcGlbSYSMODULETYPE == SIM){
+1128   2                      fn8051UARTSendString("ATE0\r");
+1129   2                      fn8051SYSDELAY(1000);
+1130   2                      fn8051UARTSendString("AT+IPR=9600\r");  
+1131   2                      fn8051SYSDELAY(1000);
+1132   2                      fn8051UARTSendString("AT+CMGF=1\r"); 
+1133   2                      fn8051SYSDELAY(1000);
+1134   2                      fn8051UARTSendString("AT+CNMI=2,2,0,0,0\r");   
+1135   2              }                     
+1136   1      }
+1137          void fn8051SIMSENDSTRING(){
+1138   1              if(vrcGlbSYSMODULETYPE == SIM){
+1139   2                      fn8051UARTSendString("AT+CMGS=\""); 
+1140   2                      fn8051UARTSendString(PHONENUMBER);
+1141   2                      fn8051UARTSendString("\"");
+1142   2                      while(vrbGlb8051SIMFLAG == 0){}                                                                                                         
+1143   2              }               
+1144   1      }
+1145          void fn8051SIMSENDSMS (){
+1146   1              if(vrcGlbSYSMODULETYPE == SIM){fn8051UARTSendChar(0x1a);}               
+1147   1      }
+1148          signed char fn8051ButtenEncode(){
+1149   1              int ADCbuttonvalue;
+1150   1              ADCbuttonvalue = (int) fn8051ADCREAD(4,1);
+1151   1              fn8051SYSDELAY(20);
+1152   1              if(ADCbuttonvalue >= 0 && ADCbuttonvalue < 20){
+1153   2                      return -1;
+1154   2              }
+1155   1              else if(ADCbuttonvalue > 2200 && ADCbuttonvalue < 2350){
+1156   2                      return 2;       
+1157   2              }
+1158   1              else if(ADCbuttonvalue > 2800 && ADCbuttonvalue < 3050 ){
+1159   2                      return 1;
+1160   2              }
+1161   1              else{
+1162   2                      return 0;
+1163   2              }
+1164   1      }
+
+
+C51 COMPILER V9.60.0.0   MAIN                                                              05/16/2020 17:58:23 PAGE 20  
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   6969    ----
+   CONSTANT SIZE    =    455    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     30     115
+   IDATA SIZE       =      8    ----
+   BIT SIZE         =      5       8
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

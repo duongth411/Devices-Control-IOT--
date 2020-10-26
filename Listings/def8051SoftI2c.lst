@@ -1,0 +1,72 @@
+C51 COMPILER V9.60.0.0   DEF8051SOFTI2C                                                    05/16/2020 17:58:24 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DEF8051SOFTI2C
+OBJECT MODULE PLACED IN .\Objects\def8051SoftI2c.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lib\def8051SoftI2c.c ROM(COMPACT) OPTIMIZE(8,SPEED) BROWSE INCDIR(.\lib;
+                    -.\Include) DEFINE(FOSC_160000) DEBUG OBJECTEXTEND PRINT(.\Listings\def8051SoftI2c.lst) OBJECT(.\Objects\def8051SoftI2c.o
+                    -bj)
+
+line level    source
+
+   1          #include "def8051SoftI2C.h"
+   2          #include "N76E003.h"
+   3          void fn8051I2CStart(void){
+   4   1              SCL = 1; SCL = 0;
+   5   1              SDA = 1; SCL = 1;
+   6   1              SDA = 0; 
+   7   1              SCL = 0;
+   8   1      }
+   9          void fn8051I2CStop(void){
+  10   1              SCL = 1; SCL = 0;
+  11   1              SDA = 0;
+  12   1              SCL = 1; 
+  13   1              SDA = 1;
+  14   1      }
+  15          bit fn8051I2CWrite(unsigned char dat){
+  16   1              unsigned char i;
+  17   1              for (i=0;i<8;i++){
+  18   2                      SDA = (dat & 0x80) ? 1:0;
+  19   2                      SCL=1;SCL=0;
+  20   2                      dat<<=1;
+  21   2              }
+  22   1              SCL = 1;
+  23   1              SCL = 0;
+  24   1              return dat;
+  25   1      }
+  26          unsigned char fn8051I2CRead(void){      
+  27   1              bit rd_bit;
+  28   1              unsigned char i, dat;
+  29   1              dat = 0x00;
+  30   1              for(i=0;i<8;i++)                                                                                /* For loop read data 1 byte */
+  31   1              {
+  32   2                      SCL = 1;                                /* Set SCL */
+  33   2                      rd_bit = SDA;                                                                           /* Keep for check acknowledge */
+  34   2                      dat = dat<<1;
+  35   2                      dat = dat | rd_bit;                                                     /* Keep bit data in dat */
+  36   2                      SCL = 0;                                                                                                        /* Clear SCL */
+  37   2              }
+  38   1              return dat;
+  39   1      }
+  40          void fn8051I2CACKWAIT(){
+  41   1          SDA = 1; //Configure SDA_PIN as Input to read the ACK                //delay_us(1);
+  42   1          SCL = 1;
+  43   1          while(SDA==1);
+  44   1          SCL = 0;
+  45   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    109    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V9.60.0.0   DEF8051SOFTI2C                                                    05/16/2020 17:58:24 PAGE 2   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

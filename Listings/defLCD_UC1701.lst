@@ -1,0 +1,280 @@
+C51 COMPILER V9.60.0.0   DEFLCD_UC1701                                                     05/07/2020 16:04:27 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DEFLCD_UC1701
+OBJECT MODULE PLACED IN .\Objects\defLCD_UC1701.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lib\defLCD_UC1701.c ROM(COMPACT) OPTIMIZE(8,SPEED) BROWSE INCDIR(.\lib;.
+                    -\Include) DEFINE(FOSC_160000) DEBUG OBJECTEXTEND PRINT(.\Listings\defLCD_UC1701.lst) OBJECT(.\Objects\defLCD_UC1701.obj)
+
+line level    source
+
+   1          #include "defLCD_UC1701.h"
+*** ERROR C141 IN LINE 4 OF lib\defLCD_UC1701.h: syntax error near ')', expected '<id>'
+*** ERROR C141 IN LINE 5 OF lib\defLCD_UC1701.h: syntax error near ')', expected '<id>'
+   2          
+   3          sbit LCD_SCL = ;
+*** ERROR C141 IN LINE 3 OF lib\defLCD_UC1701.c: syntax error near ';', expected 'sizeof'
+   4          sbit LCD_SDA = ;
+*** ERROR C202 IN LINE 4 OF lib\defLCD_UC1701.c: 'LCD_SDA': undefined identifier
+*** ERROR C141 IN LINE 4 OF lib\defLCD_UC1701.c: syntax error near ';', expected 'sizeof'
+   5          sbit LCD_RS = ;
+*** ERROR C141 IN LINE 5 OF lib\defLCD_UC1701.c: syntax error near ';', expected 'sizeof'
+   6          sbit LCD_RESET = ;
+*** ERROR C141 IN LINE 6 OF lib\defLCD_UC1701.c: syntax error near ';', expected 'sizeof'
+   7          sbit LCD_CS = ;
+*** ERROR C141 IN LINE 7 OF lib\defLCD_UC1701.c: syntax error near ';', expected 'sizeof'
+   8          
+   9          #define FONT_SIZE 5
+  10          code const VRA2GLBFONTTABLE[][FONT_SIZE]=
+*** ERROR C141 IN LINE 10 OF lib\defLCD_UC1701.c: syntax error near ']', expected ';'
+  11          {
+  12                  0x00, 0x00, 0x00, 0x00, 0x00,   // space
+  13                  0x00, 0x00, 0x2f, 0x00, 0x00,   // !
+  14                  0x00, 0x07, 0x00, 0x07, 0x00,   // "
+  15                  0x14, 0x7f, 0x14, 0x7f, 0x14,   // #
+  16                  0x24, 0x2a, 0x7f, 0x2a, 0x12,   // $
+  17                  0x23, 0x13, 0x08, 0x64, 0x62,   // %
+  18                  0x36, 0x49, 0x55, 0x22, 0x50,   // &
+  19                  0x00, 0x05, 0x03, 0x00, 0x00,   // '
+  20                  0x00, 0x1c, 0x22, 0x41, 0x00,   // (
+  21                  0x00, 0x41, 0x22, 0x1c, 0x00,   // )
+  22                  0x14, 0x08, 0x3E, 0x08, 0x14,   // *
+  23                  0x08, 0x08, 0x3E, 0x08, 0x08,   // +
+  24                  0x00, 0x00, 0xA0, 0x60, 0x00,   // ,
+  25                  0x08, 0x08, 0x08, 0x08, 0x08,   // -
+  26                  0x00, 0x60, 0x60, 0x00, 0x00,   // .
+  27                  0x20, 0x10, 0x08, 0x04, 0x02,   // /
+  28          
+  29                  0x3E, 0x51, 0x49, 0x45, 0x3E,   // 0
+  30                  0x00, 0x42, 0x7F, 0x40, 0x00,   // 1
+  31                  0x42, 0x61, 0x51, 0x49, 0x46,   // 2
+  32                  0x21, 0x41, 0x45, 0x4B, 0x31,   // 3
+  33                  0x18, 0x14, 0x12, 0x7F, 0x10,   // 4
+  34                  0x27, 0x45, 0x45, 0x45, 0x39,   // 5
+  35                  0x3C, 0x4A, 0x49, 0x49, 0x30,   // 6
+  36                  0x01, 0x71, 0x09, 0x05, 0x03,   // 7
+  37                  0x36, 0x49, 0x49, 0x49, 0x36,   // 8
+  38                  0x06, 0x49, 0x49, 0x29, 0x1E,   // 9
+  39          
+  40                  0x00, 0x36, 0x36, 0x00, 0x00,   // :
+  41                  0x00, 0x56, 0x36, 0x00, 0x00,   // ;
+  42                  0x08, 0x14, 0x22, 0x41, 0x00,   // <
+  43                  0x14, 0x14, 0x14, 0x14, 0x14,   // =
+  44                  0x00, 0x41, 0x22, 0x14, 0x08,   // >
+  45                  0x02, 0x01, 0x51, 0x09, 0x06,   // ?
+C51 COMPILER V9.60.0.0   DEFLCD_UC1701                                                     05/07/2020 16:04:27 PAGE 2   
+
+  46                  0x32, 0x49, 0x59, 0x51, 0x3E,   // @
+  47          
+  48                  0x7C, 0x12, 0x11, 0x12, 0x7C,   // A
+  49                  0x7F, 0x49, 0x49, 0x49, 0x36,   // B
+  50                  0x3E, 0x41, 0x41, 0x41, 0x22,   // C
+  51                  0x7F, 0x41, 0x41, 0x22, 0x1C,   // D
+  52                  0x7F, 0x49, 0x49, 0x49, 0x41,   // E
+  53                  0x7F, 0x09, 0x09, 0x09, 0x01,   // F
+  54                  0x3E, 0x41, 0x49, 0x49, 0x7A,   // G
+  55                  0x7F, 0x08, 0x08, 0x08, 0x7F,   // H
+  56                  0x00, 0x41, 0x7F, 0x41, 0x00,   // I
+  57                  0x20, 0x40, 0x41, 0x3F, 0x01,   // J
+  58                  0x7F, 0x08, 0x14, 0x22, 0x41,   // K
+  59                  0x7F, 0x40, 0x40, 0x40, 0x40,   // L
+  60                  0x7F, 0x02, 0x0C, 0x02, 0x7F,   // M
+  61                  0x7F, 0x04, 0x08, 0x10, 0x7F,   // N
+  62                  0x3E, 0x41, 0x41, 0x41, 0x3E,   // O
+  63                  0x7F, 0x09, 0x09, 0x09, 0x06,   // P
+  64                  0x3E, 0x41, 0x51, 0x21, 0x5E,   // Q
+  65                  0x7F, 0x09, 0x19, 0x29, 0x46,   // R
+  66                  0x46, 0x49, 0x49, 0x49, 0x31,   // S
+  67                  0x01, 0x01, 0x7F, 0x01, 0x01,   // T
+  68                  0x3F, 0x40, 0x40, 0x40, 0x3F,   // U
+  69                  0x1F, 0x20, 0x40, 0x20, 0x1F,   // V
+  70                  0x3F, 0x40, 0x38, 0x40, 0x3F,   // W
+  71                  0x63, 0x14, 0x08, 0x14, 0x63,   // X
+  72                  0x07, 0x08, 0x70, 0x08, 0x07,   // Y
+  73                  0x61, 0x51, 0x49, 0x45, 0x43,   // Z
+  74          
+  75                  0x00, 0x7F, 0x41, 0x41, 0x00,   // [
+  76                  0x55, 0xAA, 0x55, 0xAA, 0x55,   // Backslash (Checker pattern)
+  77                  0x00, 0x41, 0x41, 0x7F, 0x00,   // ]
+  78                  0x04, 0x02, 0x01, 0x02, 0x04,   // ^
+  79                  0x40, 0x40, 0x40, 0x40, 0x40,   // _
+  80                  0x00, 0x03, 0x05, 0x00, 0x00,   // `
+  81          
+  82                  0x20, 0x54, 0x54, 0x54, 0x78,   // a
+  83                  0x7F, 0x48, 0x44, 0x44, 0x38,   // b
+  84                  0x38, 0x44, 0x44, 0x44, 0x20,   // c
+  85                  0x38, 0x44, 0x44, 0x48, 0x7F,   // d
+  86                  0x38, 0x54, 0x54, 0x54, 0x18,   // e
+  87                  0x08, 0x7E, 0x09, 0x01, 0x02,   // f
+  88                  0x18, 0xA4, 0xA4, 0xA4, 0x7C,   // g
+  89                  0x7F, 0x08, 0x04, 0x04, 0x78,   // h
+  90                  0x00, 0x44, 0x7D, 0x40, 0x00,   // i
+  91                  0x40, 0x80, 0x84, 0x7D, 0x00,   // j
+  92                  0x7F, 0x10, 0x28, 0x44, 0x00,   // k
+  93                  0x00, 0x41, 0x7F, 0x40, 0x00,   // l
+  94                  0x7C, 0x04, 0x18, 0x04, 0x78,   // m
+  95                  0x7C, 0x08, 0x04, 0x04, 0x78,   // n
+  96                  0x38, 0x44, 0x44, 0x44, 0x38,   // o
+  97                  0xFC, 0x24, 0x24, 0x24, 0x18,   // p
+  98                  0x18, 0x24, 0x24, 0x18, 0xFC,   // q
+  99                  0x7C, 0x08, 0x04, 0x04, 0x08,   // r
+ 100                  0x48, 0x54, 0x54, 0x54, 0x20,   // s
+ 101                  0x04, 0x3F, 0x44, 0x40, 0x20,   // t
+ 102                  0x3C, 0x40, 0x40, 0x20, 0x7C,   // u
+ 103                  0x1C, 0x20, 0x40, 0x20, 0x1C,   // v
+ 104                  0x3C, 0x40, 0x30, 0x40, 0x3C,   // w
+ 105                  0x44, 0x28, 0x10, 0x28, 0x44,   // x
+ 106                  0x1C, 0xA0, 0xA0, 0xA0, 0x7C,   // y
+ 107                  0x44, 0x64, 0x54, 0x4C, 0x44,   // z
+C51 COMPILER V9.60.0.0   DEFLCD_UC1701                                                     05/07/2020 16:04:27 PAGE 3   
+
+ 108          };
+ 109          void LCD_COMMANDSEND(int data){
+*** ERROR C141 IN LINE 109 OF lib\defLCD_UC1701.c: syntax error near ')', expected '<id>'
+ 110   1              char i;
+ 111   1              LCD_CS=0;
+*** ERROR C202 IN LINE 111 OF lib\defLCD_UC1701.c: 'LCD_CS': undefined identifier
+ 112   1              LCD_RS=0;
+*** ERROR C202 IN LINE 112 OF lib\defLCD_UC1701.c: 'LCD_RS': undefined identifier
+ 113   1              for(i=0;i<8;i++)
+ 114   1              {
+ 115   2                      LCD_SCL=0;
+*** ERROR C202 IN LINE 115 OF lib\defLCD_UC1701.c: 'LCD_SCL': undefined identifier
+ 116   2                      LCD_SDA = (data & 0x80) ? 1:0;
+*** ERROR C202 IN LINE 116 OF lib\defLCD_UC1701.c: 'LCD_SDA': undefined identifier
+*** ERROR C141 IN LINE 116 OF lib\defLCD_UC1701.c: syntax error near '&', expected 'bit'
+*** ERROR C141 IN LINE 116 OF lib\defLCD_UC1701.c: syntax error near ')', expected ';'
+*** ERROR C141 IN LINE 116 OF lib\defLCD_UC1701.c: syntax error near ':', expected ';'
+ 117   2                      LCD_SCL=1;
+*** ERROR C202 IN LINE 117 OF lib\defLCD_UC1701.c: 'LCD_SCL': undefined identifier
+ 118   2                      data <<= 1;
+*** ERROR C141 IN LINE 118 OF lib\defLCD_UC1701.c: syntax error near 'data', expected '__asm'
+ 119   2              }
+ 120   1              LCD_CS=1;
+*** ERROR C202 IN LINE 120 OF lib\defLCD_UC1701.c: 'LCD_CS': undefined identifier
+ 121   1      }
+ 122          void LCD_DATASEND(int data){
+*** ERROR C141 IN LINE 122 OF lib\defLCD_UC1701.c: syntax error near ')', expected '<id>'
+ 123   1              char i;
+ 124   1              LCD_CS=0;
+*** ERROR C202 IN LINE 124 OF lib\defLCD_UC1701.c: 'LCD_CS': undefined identifier
+ 125   1              LCD_RS=1;
+*** ERROR C202 IN LINE 125 OF lib\defLCD_UC1701.c: 'LCD_RS': undefined identifier
+ 126   1              for(i=0;i<8;i++)
+ 127   1              {
+ 128   2                      LCD_SCL=0;
+*** ERROR C202 IN LINE 128 OF lib\defLCD_UC1701.c: 'LCD_SCL': undefined identifier
+ 129   2                      LCD_SDA = (data & 0x80) ? 1:0;
+*** ERROR C202 IN LINE 129 OF lib\defLCD_UC1701.c: 'LCD_SDA': undefined identifier
+*** ERROR C141 IN LINE 129 OF lib\defLCD_UC1701.c: syntax error near '&', expected 'bit'
+*** ERROR C141 IN LINE 129 OF lib\defLCD_UC1701.c: syntax error near ')', expected ';'
+*** ERROR C141 IN LINE 129 OF lib\defLCD_UC1701.c: syntax error near ':', expected ';'
+ 130   2                      LCD_SCL=1;
+*** ERROR C202 IN LINE 130 OF lib\defLCD_UC1701.c: 'LCD_SCL': undefined identifier
+ 131   2                      data <<= 1;
+*** ERROR C141 IN LINE 131 OF lib\defLCD_UC1701.c: syntax error near 'data', expected '__asm'
+ 132   2              }
+ 133   1              LCD_CS=1;
+*** ERROR C202 IN LINE 133 OF lib\defLCD_UC1701.c: 'LCD_CS': undefined identifier
+ 134   1      }
+ 135          void LCD_INIT(){
+ 136   1              LCD_RESET=0; 
+*** ERROR C202 IN LINE 136 OF lib\defLCD_UC1701.c: 'LCD_RESET': undefined identifier
+ 137   1              delay(100);
+ 138   1              LCD_RESET=1; 
+ 139   1              delay(100);
+ 140   1              LCD_COMMANDSEND(0xe2); 
+ 141   1              delay(5);
+ 142   1              LCD_COMMANDSEND(0x2c); 
+ 143   1              delay(50);
+ 144   1              LCD_COMMANDSEND(0x2e); 
+ 145   1              delay(50);
+ 146   1              LCD_COMMANDSEND(0x2f); 
+C51 COMPILER V9.60.0.0   DEFLCD_UC1701                                                     05/07/2020 16:04:27 PAGE 4   
+
+ 147   1              delay(5);
+ 148   1              LCD_COMMANDSEND(0x23); 
+ 149   1              LCD_COMMANDSEND(0x81); 
+ 150   1              LCD_COMMANDSEND(0x28); 
+ 151   1              LCD_COMMANDSEND(0xa2); 
+ 152   1              LCD_COMMANDSEND(0xc8); 
+ 153   1              LCD_COMMANDSEND(0xa0); 
+ 154   1              LCD_COMMANDSEND(0x40); 
+ 155   1              LCD_COMMANDSEND(0xaf); 
+ 156   1      }
+ 157          void LCD_ADDRESS(unsigned char page,unsigned char column){
+ 158   1              column = column-0x01;
+ 159   1              LCD_COMMANDSEND(0xb0 + page-1); 
+ 160   1              LCD_COMMANDSEND(0x10 + (column>>4&0x0f)); 
+ 161   1              LCD_COMMANDSEND(column&0x0f); 
+ 162   1      }
+ 163          void LCD_CLR_ALL(){
+ 164   1              unsigned char i,j;
+ 165   1              for(i=0;i<9;i++){
+ 166   2                      LCD_COMMANDSEND(0xb0+i);
+ 167   2                      LCD_COMMANDSEND(0x10);
+ 168   2                      LCD_COMMANDSEND(0x00);
+ 169   2                      for(j=0;j<132;j++){
+ 170   3                              LCD_DATASEND(0x00);
+ 171   3                      }
+ 172   2              }
+ 173   1      }
+ 174          void LCD_DRAWBOX(unsigned char page, unsigned char column, unsigned char high, unsigned char width,bit MOD
+             -E){
+ 175   1              unsigned char LastPAGE=0,i,j;
+ 176   1              LastPAGE = page + high;
+ 177   1              for(i=page;i<=LastPAGE;i++){
+ 178   2                      LCD_ADDRESS(page,column);
+ 179   2                      if(MODE == 0){
+ 180   3                              for(j=column;j<=(column+width);j++){
+ 181   4                                      LCD_DATASEND(0x00);
+ 182   4                              }
+ 183   3                      }
+ 184   2                      else if(MODE == 1){
+ 185   3                              for(j=column;j<=(column+width);j++){
+ 186   4                                      LCD_DATASEND(0xff);
+ 187   4                              }
+ 188   3                      }
+ 189   2              }
+ 190   1      }
+ 191          void LCD_DRAWFRAME(unsigned char page, unsigned char column, unsigned char high, unsigned char width){
+ 192   1              unsigned char length,LastPAGE=0,i,j;
+ 193   1              LastPAGE = page + high;
+ 194   1              length = column + width;
+ 195   1              for(i=page;i<=LastPAGE;i++){
+ 196   2                      LCD_ADDRESS(page,column);
+ 197   2                      for(j = column;j <= length;j++){
+ 198   3                              if ((i == page)){
+ 199   4                                      LCD_DATASEND(0x01);
+ 200   4                              }
+ 201   3                              if ((i == LastPAGE)){
+ 202   4                                      LCD_DATASEND(0x80);
+ 203   4                              }
+ 204   3                              if(j == column)||(j == length){
+ 205   4                                      LCD_DATASEND(0xff);
+ 206   4                              }
+ 207   3                      }
+C51 COMPILER V9.60.0.0   DEFLCD_UC1701                                                     05/07/2020 16:04:27 PAGE 5   
+
+ 208   2              }
+ 209   1      }
+ 210          void LCD_DISPLAYSTRING_5x8(unsigned char page,unsigned char column,unsigned char *dp){
+ 211   1              unsigned char i,fontdata;
+ 212   1              while(*dp!=NULL){
+ 213   2                      if(*dp == '\n'){
+ 214   3                              LCD_ADDRESS(page+1,column);
+ 215   3                      }
+ 216   2                      else if(*dp != '\n'){
+ 217   3                              LCD_ADDRESS(page,column);
+ 218   3                              *dp = *dp - 0x20;
+ 219   3                              for(i=0;i<6;i++){
+ 220   4                                      fontdata = VRA2GLBFONTTABLE[*dp][i]; 
+ 221   4                                      LCD_DATASEND(fontdata);
+ 222   4                              }
+ 223   3                      }
+ 224   2                      column+=1;
+ 225   2                      *dp++;
+ 226   2              }
+ 227   1      }
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  32 ERROR(S)

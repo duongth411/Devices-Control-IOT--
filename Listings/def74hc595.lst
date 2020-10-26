@@ -1,0 +1,230 @@
+C51 COMPILER V9.60.0.0   DEF74HC595                                                        05/04/2020 10:15:29 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DEF74HC595
+OBJECT MODULE PLACED IN .\Objects\def74hc595.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lib\def74hc595.c ROM(COMPACT) OPTIMIZE(8,SPEED) BROWSE INCDIR(.\lib;.\In
+                    -clude) DEFINE(FOSC_160000) DEBUG OBJECTEXTEND PRINT(.\Listings\def74hc595.lst) OBJECT(.\Objects\def74hc595.obj)
+
+line level    source
+
+   1          #include "def74hc595.h"
+   2          #include "N76E003.h"
+   3          #include "port.h"
+   4          #define COMMONANODE 
+   5          #ifdef COMMONANODE                                      // duong chung + dk led  = 0 thi sang
+   6                  const bit ledon  = 0;
+   7                  const bit ledoff = 1;
+   8                  const NUMBER[10]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xf8,0x80,0x90};
+   9          #else           // am chung
+                      const bit ledon  = 0;
+                      const bit ledoff = 1;
+                      const NUMBER[10]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,0x7f,0x6f};
+              #endif
+  14          unsigned char BYTE[4];
+  15          void fn80517segled_DISPLAY_(unsigned char *INDEX,bit BLINKINDEX,unsigned char BLINKINDICATOR ){
+  16   1              unsigned char i=0;
+  17   1              bit buffer=0;
+  18   1              pnobl80517segledCtr_L1=pnobl80517segledCtr_L2=pnobl80517segledCtr_L3=pnobl80517segledCtr_L4=ledoff;
+  19   1              if(BLINKINDICATOR == 0xff){
+  20   2                      pnobl80517segledCtr_L1=pnobl80517segledCtr_L2=pnobl80517segledCtr_L3=pnobl80517segledCtr_L4=ledoff;
+  21   2              }
+  22   1              else{
+  23   2                      if(BLINKINDEX == 0){
+  24   3                               fn80517segledCTRLLED(INDEX);
+  25   3                      }
+  26   2                      else if (BLINKINDEX == 1){
+  27   3                              BLINKINDICATOR &= (0x01<<((*INDEX)-1));    
+  28   3                              if(BLINKINDICATOR == 1) {
+  29   4                                      switch ((*INDEX)){
+  30   5                                              case 1: pnobl80517segledCtr_L1 = ledoff;break;
+  31   5                                              case 2: pnobl80517segledCtr_L2 = ledoff;break;
+  32   5                                              case 3: pnobl80517segledCtr_L3 = ledoff;break;
+  33   5                                              case 4: pnobl80517segledCtr_L4 = ledoff;break;
+  34   5                                      }
+  35   4                              }
+  36   3                              else if (BLINKINDICATOR == 0){
+  37   4                                      fn80517segledCTRLLED(INDEX);
+  38   4                              }
+  39   3                      }
+  40   2              }
+  41   1      }
+  42          void fn80517segledCTRLLED(unsigned char *INDEX){
+  43   1                      if(*INDEX == 1 ){               
+  44   2                              fn80517segledSENDDT74hc595(BYTE[1]);
+  45   2                              pnobl80517segledCtr_L1 = ledon;
+  46   2                              pnobl80517segledCtr_L2 = pnobl80517segledCtr_L3 = pnobl80517segledCtr_L4 = ledoff;
+  47   2                      }
+  48   1                      else if(*INDEX == 2 ){
+  49   2                              fn80517segledSENDDT74hc595(BYTE[2]);
+  50   2                              pnobl80517segledCtr_L2 = ledon;
+  51   2                              pnobl80517segledCtr_L1 = pnobl80517segledCtr_L3 = pnobl80517segledCtr_L4 = ledoff;
+  52   2                      }
+  53   1                      else if(*INDEX == 3 ){
+  54   2                              fn80517segledSENDDT74hc595(BYTE[3]);
+C51 COMPILER V9.60.0.0   DEF74HC595                                                        05/04/2020 10:15:29 PAGE 2   
+
+  55   2                              pnobl80517segledCtr_L3 = ledon;         
+  56   2                              pnobl80517segledCtr_L1 = pnobl80517segledCtr_L2 = pnobl80517segledCtr_L4 = ledoff;
+  57   2                      }
+  58   1                      else if(*INDEX == 4 ){
+  59   2                              fn80517segledSENDDT74hc595(BYTE[4]);
+  60   2                              pnobl80517segledCtr_L4 = ledon;
+  61   2                              pnobl80517segledCtr_L1 = pnobl80517segledCtr_L3 = pnobl80517segledCtr_L2 = ledoff;
+  62   2                      }
+  63   1      }
+  64          void fn80517segledSENDDT74hc595(unsigned char bytedata){ 
+  65   1              unsigned char i,Q;
+  66   1              Q = bytedata;
+  67   1              for(i=0;i<8;i++){
+  68   2                      pnoGlb80517segmentSDI = Q & (0x80>>i);
+  69   2                      pnoGlb80517segmentCLK = 0;
+  70   2                      pnoGlb80517segmentCLK = 1;
+  71   2              } 
+  72   1              pnoGlb80517segmentSTR = 0; 
+  73   1              pnoGlb80517segmentSTR = 1;
+  74   1      }
+  75          void fn80517segled_DATA_FLOAT(unsigned char BYTE1, unsigned char BYTE2, float *floatnumber){
+  76   1              unsigned char nguyen,tphan1,Q;
+  77   1              nguyen = (unsigned char) *floatnumber;
+  78   1              tphan1 = (unsigned char) (*floatnumber*10- nguyen*10);
+  79   1              Q = NUMBER[nguyen];
+  80   1              #ifdef COMMONANODE              
+  81   1                      Q &= 0x7f;      // duong chung
+  82   1              #else           // am chung
+                              Q |= 0x80;
+                      #endif
+  85   1              BYTE[1] = NUMBER[BYTE1];
+  86   1              BYTE[2] = BYTE2;
+  87   1              BYTE[3] = Q;
+  88   1              BYTE[4] = NUMBER[tphan1];
+  89   1      }
+  90          void fn80517segled_DATA_RELAY(unsigned char RELAYNUM, unsigned char STATUS){
+  91   1              unsigned char Q;
+  92   1              Q = NUMBER[RELAYNUM];
+  93   1              #ifdef COMMONANODE      
+  94   1                      Q &= 0x7f;
+  95   1                      if(STATUS){
+  96   2                              BYTE[1] = Q;
+  97   2                              BYTE[2] = 0xff;
+  98   2                              BYTE[3] = 0xa3;
+  99   2                              BYTE[4] = 0x2B;
+ 100   2                      }
+ 101   1                      else{
+ 102   2                              BYTE[1] = Q;
+ 103   2                              BYTE[2] = 0xc0;
+ 104   2                              BYTE[3] = 0x8e;
+ 105   2                              BYTE[4] = 0x8e;
+ 106   2                      }
+ 107   1              #else           // am chung
+                              Q |= 0x80;
+                              if(STATUS){
+                                      BYTE[1] = Q;
+                                      BYTE[2] = 0x00;
+                                      BYTE[3] = 0x5c;
+                                      BYTE[4] = 0xD4;
+                              }
+                              else{   
+                                      BYTE[1] = Q;
+C51 COMPILER V9.60.0.0   DEF74HC595                                                        05/04/2020 10:15:29 PAGE 3   
+
+                                      BYTE[2] = 0x3f;
+                                      BYTE[3] = 0x71;
+                                      BYTE[4] = 0x71;
+                              }
+                      #endif
+ 122   1      }
+ 123          void fn80517segled_DATA_INT(unsigned int* bytedata){
+ 124   1              unsigned char i, leddata[4];
+ 125   1              unsigned int heso = 1000,Q;
+ 126   1              Q = *bytedata;
+ 127   1              for(i=0;i<4;i++){
+ 128   2                      leddata[i] = Q / heso;
+ 129   2                      Q = Q - ((leddata[i])*heso);
+ 130   2                      BYTE[i+1] = NUMBER[*(leddata+i)];
+ 131   2                      heso = heso/10;
+ 132   2              }       
+ 133   1      }
+ 134          void fn80517segled_DATA_4BYTE(unsigned char data1, unsigned char data2, unsigned char data3 , unsigned cha
+             -r data4){
+ 135   1              BYTE[1] = data1;
+ 136   1              BYTE[2] = data2;
+ 137   1              BYTE[3] = data3;
+ 138   1              BYTE[4] = data4;
+ 139   1      }
+ 140          void fn80517segled_DATA_RTC (unsigned char *hour, unsigned char *minute){
+ 141   1              unsigned char hour1,hour2,minute3,minute4;
+ 142   1              if(*hour<10){
+ 143   2                      hour1 = 0;
+ 144   2                      hour2 = *hour;
+ 145   2              }
+ 146   1              else{
+ 147   2                      hour1 = *hour/10;
+ 148   2                      hour2 = *hour-(hour1*10);
+ 149   2              }
+ 150   1              if(*minute<10){
+ 151   2                      minute4 = *minute;
+ 152   2                      minute3 = 0;
+ 153   2              }
+ 154   1              else{
+ 155   2                      minute3 = *minute/10;
+ 156   2                      minute4 = *minute-(minute3*10);
+ 157   2              }
+ 158   1              #ifdef COMMONANODE              
+ 159   1                      hour2 = NUMBER[hour2]& 0x7f;    // duong chung
+ 160   1              #else           // am chung
+                              hour2 = NUMBER[hour2]| 0x80;
+                      #endif
+ 163   1              BYTE[1] = NUMBER[hour1];
+ 164   1              BYTE[2] = hour2 ;
+ 165   1              BYTE[3] = NUMBER[minute3];
+ 166   1              BYTE[4] = NUMBER[minute4];
+ 167   1      }
+ 168          void fn80517segled_DATA_MODE (unsigned char * modenumber,bit mode){
+ 169   1              unsigned char Q;
+ 170   1              Q = (unsigned char)*modenumber/ 10;
+ 171   1              BYTE[3] = NUMBER[Q];
+ 172   1              Q = *modenumber - (Q*10);
+ 173   1              BYTE[4] = NUMBER[Q];
+ 174   1              if (mode == 0){
+ 175   2                      BYTE[1] = 0x12;
+ 176   2                      BYTE[2] = 0x47;
+ 177   2              }
+C51 COMPILER V9.60.0.0   DEF74HC595                                                        05/04/2020 10:15:29 PAGE 4   
+
+ 178   1              if (mode == 1){
+ 179   2                      BYTE[1] = 0xF9;
+ 180   2                      BYTE[2] = 0x0C;
+ 181   2              }
+ 182   1      }
+ 183          
+ 184          
+ 185          
+ 186          
+ 187          
+ 188          
+ 189          
+ 190          
+ 191          
+ 192          
+ 193          
+ 194          
+ 195          
+ 196          
+ 197          
+ 198          
+ 199          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    769    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     24      34
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2       3
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

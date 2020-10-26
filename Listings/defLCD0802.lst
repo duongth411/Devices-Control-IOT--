@@ -1,0 +1,154 @@
+C51 COMPILER V9.60.0.0   DEFLCD0802                                                        05/16/2020 17:58:24 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DEFLCD0802
+OBJECT MODULE PLACED IN .\Objects\defLCD0802.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lib\defLCD0802.c ROM(COMPACT) OPTIMIZE(8,SPEED) BROWSE INCDIR(.\lib;.\In
+                    -clude) DEFINE(FOSC_160000) DEBUG OBJECTEXTEND PRINT(.\Listings\defLCD0802.lst) OBJECT(.\Objects\defLCD0802.obj)
+
+line level    source
+
+   1          #include "defLCD0802.h"
+   2          #include "defDELAY16MHZ.h"
+   3          #include "N76E003.h"
+   4          #include "port.h"
+   5          
+   6          
+   7          // sbit LCD_RS                          = p0^0;
+   8          // sbit LCD_EN                          = p1^0; //uncoment neu ko dung port.h
+   9          void LCD_SEND_COMMAND(unsigned char x)
+  10          {
+  11   1              unsigned char nibh, nibl, port_tg;
+  12   1              nibh = (x & 0xF0) >> 3;
+  13   1              nibl = (x & 0x0F) << 1;
+  14   1              RS = 0;
+  15   1              port_tg = portLCD & 0xE1;
+  16   1              portLCD = (nibh | port_tg);
+  17   1              EN = 1;
+  18   1              EN = 0;
+  19   1              portLCD = (nibl | port_tg);
+  20   1              EN = 1;
+  21   1              EN = 0;
+  22   1              fn8051SYSDELAY(1);
+  23   1      }
+  24          
+  25          void LCD_DISPLAY_CHAR(unsigned char x)
+  26          {
+  27   1              unsigned char nibh, nibl, port_tg;
+  28   1              nibh = (x & 0xF0) >> 3;
+  29   1              nibl = (x & 0x0F) << 1;
+  30   1              RS = 1;
+  31   1              port_tg = portLCD & 0xE1;
+  32   1              portLCD = (nibh | port_tg);
+  33   1              EN = 1;
+  34   1              EN = 0;
+  35   1              portLCD = (nibl | port_tg);
+  36   1              EN = 1;
+  37   1              EN = 0;
+  38   1              fn8051SYSDELAY(1);
+  39   1      }
+  40          
+  41          void LCD_Init()
+  42          {
+  43   1              RS = 0;
+  44   1              portLCD = 0x00;
+  45   1              portLCD |= 0x04;
+  46   1              EN = 1;
+  47   1              EN = 0;
+  48   1              fn8051SYSDELAY(1);
+  49   1              LCD_SEND_COMMAND(FunctionSet);
+  50   1              LCD_SEND_COMMAND(DisplayMode);
+  51   1              LCD_SEND_COMMAND(EntryMode);
+  52   1              LCD_SEND_COMMAND(CLEAR);
+  53   1              LCD_SEND_COMMAND(HOME);
+  54   1      }
+C51 COMPILER V9.60.0.0   DEFLCD0802                                                        05/16/2020 17:58:24 PAGE 2   
+
+  55          void LCD_SET_CURSOR (bit row, unsigned char pos){
+  56   1              if (row == 0) {LCD_SEND_COMMAND((pos & 0x3F)|0x80);}
+  57   1              else if (row == 1) {LCD_SEND_COMMAND((pos & 0x3F)|0xC0);}
+  58   1      }
+  59          void LCD_DISPLAY_NUMBER (unsigned char char_data){
+  60   1              LCD_DISPLAY_CHAR(char_data+'0');
+  61   1      }
+  62          void LCD_DISPLAY_STRING (unsigned char *str)  {
+  63   1              int i;
+  64   1              for(i=0;str[i]!=0;i++) {
+  65   2                      LCD_DISPLAY_CHAR (str[i]);  
+  66   2              } 
+  67   1      }
+  68          void LCD_NEW_SLIDE (bit mode){
+  69   1              unsigned char i;
+  70   1              for(i=0;i<8;i++){
+  71   2                      if(mode == 0){LCD_SHIFT_RIGHT}
+  72   2                      else LCD_SHIFT_LEFT
+  73   2                      fn8051SYSDELAY(3);
+  74   2              }
+  75   1      }
+  76          void LCD_SCROLL_1LINE(unsigned char* STRING,unsigned char LENGTH){              //sua lai
+  77   1              unsigned char COUNTER, OLDLEN ;
+  78   1              unsigned char i;
+  79   1              static bit mode;
+  80   1              if(((COUNTER <= 255)&&(COUNTER > (LENGTH - 8)))||(OLDLEN!=LENGTH)){
+  81   2                      COUNTER = 1;
+  82   2                      mode = 0;
+  83   2              }
+  84   1              else if((COUNTER == (LENGTH - 8))||(COUNTER == 0)){
+  85   2                      mode ^= 1;
+  86   2              }
+  87   1              for(i=COUNTER;i<(COUNTER+8);i++){
+  88   2                      LCD_DISPLAY_CHAR(*(STRING+i));
+  89   2              }
+  90   1              if(!mode) COUNTER++;
+  91   1              else if(mode) COUNTER--;
+  92   1              OLDLEN = LENGTH;
+  93   1      }
+  94          void LCD_NEXT_SCREEN (bit mode){
+  95   1              unsigned char i;
+  96   1              for(i=0;i<8;i++){
+  97   2                      if(mode == 0){LCD_SHIFT_RIGHT}
+  98   2                      else LCD_SHIFT_LEFT
+  99   2              }
+ 100   1      }
+ 101          
+ 102          
+ 103          
+ 104          
+ 105          
+ 106          
+ 107          
+ 108          
+ 109          
+ 110          
+ 111          
+ 112          
+ 113          
+ 114          
+ 115          
+ 116          
+C51 COMPILER V9.60.0.0   DEFLCD0802                                                        05/16/2020 17:58:24 PAGE 3   
+
+ 117          
+ 118          
+ 119          
+ 120          
+ 121          
+ 122          
+ 123          
+ 124          
+ 125          
+ 126          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    401    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      15
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1       3
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

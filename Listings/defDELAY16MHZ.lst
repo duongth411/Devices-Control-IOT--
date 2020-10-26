@@ -1,0 +1,40 @@
+C51 COMPILER V9.60.0.0   DEFDELAY16MHZ                                                     05/16/2020 17:58:24 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE DEFDELAY16MHZ
+OBJECT MODULE PLACED IN .\Objects\defDELAY16MHZ.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE lib\defDELAY16MHZ.c ROM(COMPACT) OPTIMIZE(8,SPEED) BROWSE INCDIR(.\lib;.
+                    -\Include) DEFINE(FOSC_160000) DEBUG OBJECTEXTEND PRINT(.\Listings\defDELAY16MHZ.lst) OBJECT(.\Objects\defDELAY16MHZ.obj)
+
+line level    source
+
+   1          #include "defDELAY16MHZ.h"
+   2          
+   3          void fn8051SYSDELAY(unsigned int time){
+   4   1              unsigned int counter,counter1;
+   5   1              for(counter1=0;counter1<time;counter1++){
+   6   2                      for(counter=0;counter<16000;counter++){
+   7   3                      }
+   8   2              }
+   9   1      }
+  10          void fn8051SYSDELAYUS(unsigned int time){
+  11   1              unsigned int counter,counter1;
+  12   1              for(counter1=0;counter1<time;counter1++){
+  13   2                      for(counter=0;counter<16;counter++){
+  14   3                      }
+  15   2              }
+  16   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     64    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

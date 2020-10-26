@@ -1,0 +1,12 @@
+".\Objects\main.obj",
+".\Objects\Common.obj",
+".\Objects\STARTUP.obj",
+".\Objects\def8051SoftI2c.obj",
+".\Objects\def8051DS1307.obj",
+".\Objects\def8051ADCread.obj",
+".\Objects\defDELAY16MHZ.obj",
+".\Objects\defLCD0802.obj" 
+TO ".\Objects\PrgSysRelayControl" 
+PRINT(".\Listings\PrgSysRelayControl.m51") RAMSIZE(256) 
+DISABLEWARNING (16) 
+XDATA( 0X0000-0X02FF )
